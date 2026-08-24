@@ -492,8 +492,8 @@ body {
         <div class="section-label">Скидки</div>
         <div class="chips" id="chips-discounts">
           <button class="chip" data-discount="stream"  data-rate="0.20" onclick="toggleDiscount(this)">⚡ Действующий поток (−20%)</button>
-          <button class="chip" data-discount="benefit" data-rate="0.10" onclick="toggleDiscount(this)">📄 Льготы (−10%)</button>
-          <button class="chip" data-discount="result"  data-rate="0.10" onclick="toggleDiscount(this)">🏆 За результат (−10%)</button>
+          <button class="chip" data-discount="benefit" data-rate="0.10" onclick="toggleDiscount(this)">📄 Льгота (−10%)</button>
+          <button class="chip" data-discount="result"  data-rate="0.10" onclick="toggleDiscount(this)">👨‍👩‍👧‍👦 2 или более детей из семьи (−10%)</button>
         </div>
         <div class="hint-discounts">Скидки суммируются · применяются к итоговой сумме</div>
       </div>
@@ -625,8 +625,8 @@ const GRADES = {
 
 const DISCOUNTS = {
   stream:  { label: 'Действующий поток −20%', rate: 0.20 },
-  benefit: { label: 'Льготы −10%',            rate: 0.10 },
-  result:  { label: 'За результат −10%',       rate: 0.10 },
+  benefit: { label: 'Льгота −10%',              rate: 0.10 },
+  result:  { label: '2 или более детей из семьи −10%', rate: 0.10 },
 };
 
 let state = { grade: null, period: null, discounts: new Set() };
