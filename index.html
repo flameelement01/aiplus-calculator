@@ -348,6 +348,46 @@ body {
 .detail-discount { color: var(--orange-deep); }
 .detail-total { color: var(--orange); font-weight: 800; font-size: 16px; }
 
+/* ── Custom period input ─────────────────────────────────────────────────── */
+.custom-months-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+  padding: 14px 16px;
+  background: var(--orange-light);
+  border: 1.5px solid var(--orange-border);
+  border-radius: 12px;
+}
+.custom-months-input {
+  width: 76px;
+  height: 48px;
+  border: 1.5px solid var(--orange-border);
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  font-family: inherit;
+  color: var(--text);
+  background: #fff;
+  outline: none;
+  flex-shrink: 0;
+}
+.custom-months-input:focus { border-color: var(--orange); }
+.custom-months-input::-webkit-inner-spin-button,
+.custom-months-input::-webkit-outer-spin-button { opacity: 0.4; }
+.custom-months-label {
+  font-size: 14px;
+  color: var(--text2);
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.custom-tier-info {
+  font-size: 12px;
+  color: var(--orange-deep);
+  font-weight: 600;
+}
+
 /* ── Send block ──────────────────────────────────────────────────────────── */
 .wa-card {
   background: var(--dark);
@@ -666,6 +706,12 @@ const GRADES = {
       { label: '6 месяцев',  total: 820000,  monthly: 136599 },
       { label: '9 месяцев',  total: 1143000, monthly: 126979 },
       { label: '12 месяцев', total: 1402000, monthly: 116821 },
+    ],
+    customTiers: [
+      { min: 3, max: 3, monthly: 146333 },
+      { min: 4, max: 6, monthly: 136599 },
+      { min: 7, max: 9, monthly: 126979 },
+      { min: 10, max: Infinity, monthly: 116821 },
     ]
   },
   '6': {
@@ -683,6 +729,12 @@ const GRADES = {
       { label: '6 месяцев',  total: 924000,  monthly: 153914 },
       { label: '9 месяцев',  total: 1334000, monthly: 148142 },
       { label: '12 месяцев', total: 1636000, monthly: 136291 },
+    ],
+    customTiers: [
+      { min: 3, max: 3, monthly: 154000 },
+      { min: 4, max: 6, monthly: 153914 },
+      { min: 7, max: 9, monthly: 148142 },
+      { min: 10, max: Infinity, monthly: 136291 },
     ]
   },
   '11': {
@@ -701,7 +753,7 @@ const DISCOUNTS = {
   result:  { label: '2 или более детей из семьи −10%', rate: 0.10 },
 };
 
-let state = { grade: null, period: null, discounts: new Set() };
+let state = { grade: null, period: null, customMonths: null, discounts: new Set() };
 
 // ── Format ────────────────────────────────────────────────────────────────────
 function fmt(n) {
@@ -722,9 +774,33 @@ function selectGrade(btn) {
 
 function selectPeriod(btn) {
   state.period = parseInt(btn.dataset.idx);
+  state.customMonths = null;
   document.querySelectorAll('#chips-period .chip').forEach(c => c.classList.remove('active-primary'));
   btn.classList.add('active-primary');
+  const row = document.getElementById('custom-months-row');
+  if (row) row.style.display = 'none';
   render();
+}
+
+function selectCustomPeriod(btn) {
+  state.period = 'custom';
+  state.customMonths = null;
+  document.querySelectorAll('#chips-period .chip').forEach(c => c.classList.remove('active-primary'));
+  btn.classList.add('active-primary');
+  const row = document.getElementById('custom-months-row');
+  if (row) { row.style.display = ''; document.getElementById('custom-months-input').focus(); }
+  render();
+}
+
+function onCustomMonthsChange(input) {
+  const v = parseInt(input.value);
+  if (!isNaN(v) && v >= 3) {
+    state.customMonths = v;
+    render();
+  } else {
+    state.customMonths = null;
+    render();
+  }
 }
 
 function toggleDiscount(btn) {
@@ -740,7 +816,7 @@ function toggleDiscount(btn) {
 }
 
 function resetAll() {
-  state = { grade: null, period: null, discounts: new Set() };
+  state = { grade: null, period: null, customMonths: null, discounts: new Set() };
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('active-primary','active-discount'));
   document.getElementById('section-period').style.display = 'none';
   document.getElementById('section-discounts').style.display = 'none';
@@ -761,22 +837,69 @@ function renderPeriods() {
     btn.onclick = () => selectPeriod(btn);
     container.appendChild(btn);
   });
+
+  if (g.customTiers) {
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.dataset.idx = 'custom';
+    btn.innerHTML = '✏️ Свой срок';
+    btn.onclick = () => selectCustomPeriod(btn);
+    container.appendChild(btn);
+
+    const row = document.createElement('div');
+    row.id = 'custom-months-row';
+    row.style.display = 'none';
+    row.className = 'custom-months-row';
+    row.innerHTML = `
+      <input id="custom-months-input" class="custom-months-input" type="number" min="3" max="36"
+        placeholder="3" oninput="onCustomMonthsChange(this)">
+      <div>
+        <div class="custom-months-label">месяцев обучения</div>
+        <div class="custom-tier-info" id="custom-tier-info">минимум 3 месяца</div>
+      </div>`;
+    container.appendChild(row);
+  }
+
   const hint = document.getElementById('period-hint');
   if (g.hint) { hint.textContent = g.hint; hint.style.display = ''; }
   else { hint.style.display = 'none'; }
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
+function getCustomTierLabel(g, months) {
+  const t = g.customTiers.find(t => months >= t.min && months <= t.max);
+  if (!t) return '';
+  if (months === 3) return `3 мес · ${fmt(t.monthly)} ₸/мес`;
+  if (t.max === Infinity) return `10–12+ мес · ${fmt(t.monthly)} ₸/мес`;
+  return `${t.min}–${t.max} мес · ${fmt(t.monthly)} ₸/мес`;
+}
+
 function render() {
-  const show = state.grade !== null && state.period !== null;
+  const isCustom = state.period === 'custom';
+  const show = state.grade !== null && (
+    (isCustom && state.customMonths !== null) ||
+    (!isCustom && state.period !== null)
+  );
   document.getElementById('empty-state').style.display    = show ? 'none' : '';
   document.getElementById('result-content').style.display = show ? '' : 'none';
   document.getElementById('details-card').style.display   = show ? '' : 'none';
   document.getElementById('kaspi-card').style.display     = show ? '' : 'none';
-  if (!show) return;
+  if (!show) {
+    document.getElementById('wa-card').style.display = 'none';
+    return;
+  }
 
   const g = GRADES[state.grade];
-  const p = g.periods[state.period];
+  let p;
+  if (isCustom) {
+    const months = state.customMonths;
+    const tier = g.customTiers.find(t => months >= t.min && months <= t.max);
+    p = { label: `${months} мес`, total: months * tier.monthly, monthly: tier.monthly };
+    const infoEl = document.getElementById('custom-tier-info');
+    if (infoEl) infoEl.textContent = getCustomTierLabel(g, months);
+  } else {
+    p = g.periods[state.period];
+  }
 
   let discountRate = 0;
   state.discounts.forEach(id => { discountRate += DISCOUNTS[id].rate; });
