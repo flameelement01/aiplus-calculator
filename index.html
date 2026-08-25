@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root {
   --bg:           #f5f4f1;
@@ -347,6 +348,59 @@ body {
 .detail-discount { color: var(--orange-deep); }
 .detail-total { color: var(--orange); font-weight: 800; font-size: 16px; }
 
+/* ── WhatsApp block ──────────────────────────────────────────────────────── */
+.wa-card {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-top: 12px;
+}
+.wa-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #15803d;
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.wa-row {
+  display: flex;
+  gap: 8px;
+}
+.wa-input {
+  flex: 1;
+  height: 44px;
+  border: 1.5px solid #86efac;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  background: #fff;
+  color: #111;
+}
+.wa-input:focus { border-color: #22c55e; }
+.wa-btn {
+  height: 44px;
+  padding: 0 20px;
+  background: #25d366;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+.wa-btn:hover { background: #1ebe5b; }
+.wa-btn svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
+.wa-btn-pdf { background: #f5920a; }
+.wa-btn-pdf:hover { background: #d97600; }
+
 /* ── Kaspi block ─────────────────────────────────────────────────────────── */
 .kaspi-card {
   background: var(--kaspi-bg);
@@ -490,7 +544,7 @@ body {
       <!-- DISCOUNTS -->
       <div class="section" id="section-discounts" style="display:none">
         <div class="section-label">Скидки</div>
-        <div class="chips" id="chips-discounts">
+        <div class="chips" id="chips-discounts" style="flex-direction:column;align-items:flex-start;">
           <button class="chip" data-discount="stream"  data-rate="0.20" onclick="toggleDiscount(this)">⚡ Действующий поток (−20%)</button>
           <button class="chip" data-discount="benefit" data-rate="0.10" onclick="toggleDiscount(this)">📄 Льгота (−10%)</button>
           <button class="chip" data-discount="result"  data-rate="0.10" onclick="toggleDiscount(this)">👨‍👩‍👧‍👦 2 или более детей из семьи (−10%)</button>
@@ -572,6 +626,16 @@ body {
           <div class="kaspi-cell-amount" id="kaspi-24"></div>
           <div class="kaspi-cell-note">₸ в месяц · 24 платежа</div>
         </div>
+      </div>
+    <!-- WhatsApp / PDF -->
+    <div class="wa-card" id="wa-card" style="display:none">
+      <div class="wa-label">Отправить клиенту</div>
+      <div class="wa-row">
+        <input class="wa-input" id="wa-phone" type="tel" placeholder="7 777 123 45 67">
+        <button class="wa-btn wa-btn-pdf" onclick="generatePDF()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px;stroke:#fff"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          PDF + WA
+        </button>
       </div>
     </div>
   </div>
@@ -758,8 +822,193 @@ function render() {
   document.getElementById('d-monthly').textContent = fmt(finalMonthly) + ' ₸';
 
   // Kaspi
-  document.getElementById('kaspi-12').textContent = fmt(finalTotal / 12);
-  document.getElementById('kaspi-24').textContent = fmt(finalTotal / 24);
+  document.getElementById('kaspi-12').textContent = fmt(Math.round(finalTotal / 12));
+  document.getElementById('kaspi-24').textContent = fmt(Math.round(finalTotal / 24));
+
+  // WhatsApp
+  document.getElementById('wa-card').style.display = '';
+}
+
+function generatePDF() {
+  if (state.grade === null || state.period === null) return;
+
+  const rawPhone = document.getElementById('wa-phone').value.replace(/\D/g, '');
+  if (rawPhone.length < 10) { alert('Введите номер телефона клиента'); return; }
+  const phone = rawPhone.startsWith('8') ? '7' + rawPhone.slice(1) : rawPhone;
+
+  const g = GRADES[state.grade];
+  const p = g.periods[state.period];
+  let discountRate = 0;
+  state.discounts.forEach(id => { discountRate += DISCOUNTS[id].rate; });
+  discountRate = Math.min(discountRate, 0.40);
+
+  const finalTotal   = Math.round(p.total * (1 - discountRate));
+  const finalMonthly = Math.round(p.monthly * (1 - discountRate));
+  const savings      = p.total - finalTotal;
+  const hasDiscount  = discountRate > 0;
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const W = 210, orange = [245, 146, 10], dark = [30, 29, 46], gray = [90, 88, 85], red = [230, 48, 48];
+
+  // Header
+  doc.setFillColor(...dark);
+  doc.rect(0, 0, W, 28, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.text('AiPLUS', 14, 12);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(180, 180, 180);
+  doc.text('Онлайн Мектеп · mektep.aiplus.kz', 14, 20);
+  doc.setTextColor(...orange);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.text('КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ', W - 14, 17, { align: 'right' });
+
+  // Main price block
+  let y = 42;
+  doc.setTextColor(...dark);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  doc.text(`${g.label}  ·  ${p.label}`, 14, y);
+
+  y += 10;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(32);
+  doc.setTextColor(...dark);
+  doc.text(`${fmt(finalTotal)} ₸`, 14, y);
+
+  if (hasDiscount) {
+    const priceW = doc.getTextWidth(`${fmt(finalTotal)} ₸`);
+    doc.setFontSize(14);
+    doc.setTextColor(160, 155, 150);
+    doc.text(`${fmt(p.total)} ₸`, 14 + priceW + 4, y);
+    const oldW = doc.getTextWidth(`${fmt(p.total)} ₸`);
+    doc.setDrawColor(160, 155, 150);
+    doc.setLineWidth(0.4);
+    doc.line(14 + priceW + 4, y - 3, 14 + priceW + 4 + oldW, y - 3);
+  }
+
+  y += 8;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(12);
+  doc.setTextColor(...gray);
+  doc.text(`${fmt(finalMonthly)} ₸ / месяц`, 14, y);
+
+  // Savings badge
+  if (hasDiscount) {
+    y += 10;
+    doc.setFillColor(...orange);
+    doc.roundedRect(14, y - 5, 90, 9, 2, 2, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text(`★  Экономия  ${fmt(savings)} ₸  (−${Math.round(discountRate * 100)}%)`, 59, y + 0.5, { align: 'center' });
+  }
+
+  // Divider
+  y += 16;
+  doc.setDrawColor(230, 228, 222);
+  doc.setLineWidth(0.3);
+  doc.line(14, y, W - 14, y);
+
+  // Details table
+  y += 10;
+  const rows = [
+    ['Класс', g.label],
+    ['Период', p.label],
+    ['Цена без скидок', `${fmt(p.total)} ₸`],
+  ];
+  if (hasDiscount) rows.push(['Скидка', `−${Math.round(discountRate * 100)}% (−${fmt(savings)} ₸)`]);
+  rows.push(['Итоговая сумма', `${fmt(finalTotal)} ₸`]);
+  rows.push(['В месяц', `${fmt(finalMonthly)} ₸`]);
+
+  rows.forEach(([label, val]) => {
+    const isTotal = label === 'Итоговая сумма';
+    const isDisc  = label === 'Скидка';
+    doc.setFontSize(11);
+    if (isDisc || isTotal) doc.setTextColor(...orange);
+    else doc.setTextColor(...gray);
+    doc.setFont('helvetica', 'normal');
+    doc.text(label, 14, y);
+    if (isDisc || isTotal) doc.setTextColor(...orange);
+    else doc.setTextColor(...dark);
+    doc.setFont('helvetica', isTotal ? 'bold' : 'normal');
+    doc.text(val, W - 14, y, { align: 'right' });
+    y += 9;
+  });
+
+  // Discounts applied
+  if (hasDiscount && state.discounts.length > 0) {
+    y += 4;
+    doc.setFontSize(9);
+    doc.setTextColor(...gray);
+    doc.setFont('helvetica', 'normal');
+    const discLabels = state.discounts.map(id => DISCOUNTS[id].label).join('  ·  ');
+    doc.text(discLabels, 14, y);
+    y += 8;
+  }
+
+  // Kaspi block
+  y += 4;
+  doc.setFillColor(255, 244, 244);
+  doc.roundedRect(14, y, W - 28, 38, 3, 3, 'F');
+  doc.setDrawColor(...red);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(14, y, W - 28, 38, 3, 3, 'S');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...red);
+  doc.text('Kaspi.kz  —  Рассрочка', 14 + 6, y + 9);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...red);
+  doc.text('Без переплат  ·  0–0–12 и 0–0–24', 14 + 6, y + 16);
+
+  // Two Kaspi cells
+  const cellW = (W - 28 - 18) / 2;
+  [['0 – 0 – 12', Math.round(finalTotal / 12), '12 платежей'],
+   ['0 – 0 – 24', Math.round(finalTotal / 24), '24 платежа']
+  ].forEach(([plan, amt, note], i) => {
+    const cx = 14 + 6 + i * (cellW + 6);
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(cx, y + 20, cellW, 14, 2, 2, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...red);
+    doc.text(plan, cx + 4, y + 27);
+    doc.setFontSize(13);
+    doc.text(`${fmt(amt)} ₸`, cx + 4, y + 33);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...gray);
+    doc.text(`₸ в месяц  ·  ${note}`, cx + cellW - 2, y + 33, { align: 'right' });
+  });
+
+  y += 48;
+
+  // Footer
+  doc.setFillColor(...dark);
+  doc.rect(0, 282, W, 15, 'F');
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  doc.text('mektep.aiplus.kz', 14, 291);
+  doc.setTextColor(...orange);
+  doc.text('AiPLUS © 2026', W - 14, 291, { align: 'right' });
+
+  // Save & open WhatsApp
+  const fileName = `AiPLUS_${g.label.replace(/[^а-яa-z0-9]/gi,'_')}_${p.label.replace(/[^а-яa-z0-9]/gi,'_')}.pdf`;
+  doc.save(fileName);
+
+  // Open WhatsApp after short delay
+  setTimeout(() => {
+    const msg = `Здравствуйте! Отправляю вам персональный прайс от AiPLUS Онлайн Мектеп.\n\n📚 ${g.label} · ${p.label}\n💰 Итого: ${fmt(finalTotal)} ₸ (в месяц: ${fmt(finalMonthly)} ₸)\n\nПрайс-лист во вложении 👆`;
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  }, 800);
 }
 
 render();
