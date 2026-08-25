@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Калькулятор · Онлайн Мектеп · AiPLUS</title>
+<title>Калькулятор цен · AiPLUS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -348,20 +348,19 @@ body {
 .detail-discount { color: var(--orange-deep); }
 .detail-total { color: var(--orange); font-weight: 800; font-size: 16px; }
 
-/* ── WhatsApp block ──────────────────────────────────────────────────────── */
+/* ── Send block ──────────────────────────────────────────────────────────── */
 .wa-card {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: var(--dark);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 20px 22px;
   margin-top: 12px;
 }
 .wa-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  color: #15803d;
-  margin-bottom: 10px;
-  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 12px;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 .wa-row {
@@ -370,24 +369,26 @@ body {
 }
 .wa-input {
   flex: 1;
-  height: 44px;
-  border: 1.5px solid #86efac;
-  border-radius: 10px;
-  padding: 0 14px;
+  height: 46px;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 11px;
+  padding: 0 16px;
   font-size: 15px;
   font-family: inherit;
   outline: none;
-  background: #fff;
-  color: #111;
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+  transition: border-color 0.15s;
 }
-.wa-input:focus { border-color: #22c55e; }
+.wa-input::placeholder { color: rgba(255,255,255,0.3); }
+.wa-input:focus { border-color: var(--orange); background: rgba(255,255,255,0.10); }
 .wa-btn {
-  height: 44px;
+  height: 46px;
   padding: 0 20px;
-  background: #25d366;
+  background: var(--orange);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: 11px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -395,11 +396,17 @@ body {
   align-items: center;
   gap: 7px;
   white-space: nowrap;
+  font-family: inherit;
+  transition: background 0.15s;
 }
-.wa-btn:hover { background: #1ebe5b; }
-.wa-btn svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
-.wa-btn-pdf { background: #f5920a; }
-.wa-btn-pdf:hover { background: #d97600; }
+.wa-btn:hover { background: var(--orange-deep); }
+.wa-btn svg { flex-shrink: 0; }
+.wa-hint {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  margin-top: 10px;
+  line-height: 1.6;
+}
 
 /* ── Kaspi block ─────────────────────────────────────────────────────────── */
 .kaspi-card {
@@ -511,7 +518,7 @@ body {
     <img class="logo-icon" src="https://static.tildacdn.pro/tild6138-6238-4632-b230-313838323361/logo.svg" alt="AiPLUS">
     <div class="logo-text">Ai<span>PLUS</span></div>
   </div>
-  <div class="header-badge">Калькулятор · Онлайн Мектеп</div>
+  <div class="header-badge">Калькулятор цен</div>
 </header>
 
 <!-- ── Page ── -->
@@ -627,16 +634,17 @@ body {
           <div class="kaspi-cell-note">₸ в месяц · 24 платежа</div>
         </div>
       </div>
-    <!-- WhatsApp / PDF -->
+    <!-- Send to client -->
     <div class="wa-card" id="wa-card" style="display:none">
-      <div class="wa-label">Отправить клиенту</div>
+      <div class="wa-label">Отправить клиенту в WhatsApp</div>
       <div class="wa-row">
-        <input class="wa-input" id="wa-phone" type="tel" placeholder="7 777 123 45 67">
-        <button class="wa-btn wa-btn-pdf" onclick="generatePDF()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px;stroke:#fff"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          PDF + WA
+        <input class="wa-input" id="wa-phone" type="tel" placeholder="+7 777 123 45 67">
+        <button class="wa-btn" onclick="generatePDF()">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.07 6.07l.9-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Отправить прайс
         </button>
       </div>
+      <div class="wa-hint">PDF скачается автоматически · откроется WhatsApp с кратким сообщением</div>
     </div>
   </div>
 </div>
@@ -861,7 +869,7 @@ function generatePDF() {
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(180, 180, 180);
-  doc.text('Онлайн Мектеп · mektep.aiplus.kz', 14, 20);
+  doc.text('mektep.aiplus.kz', 14, 20);
   doc.setTextColor(...orange);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(9);
@@ -1006,7 +1014,7 @@ function generatePDF() {
 
   // Open WhatsApp after short delay
   setTimeout(() => {
-    const msg = `Здравствуйте! Отправляю вам персональный прайс от AiPLUS Онлайн Мектеп.\n\n📚 ${g.label} · ${p.label}\n💰 Итого: ${fmt(finalTotal)} ₸ (в месяц: ${fmt(finalMonthly)} ₸)\n\nПрайс-лист во вложении 👆`;
+    const msg = `Здравствуйте! Отправляю вам персональный прайс от AiPLUS.\n\n📚 ${g.label} · ${p.label}\n💰 Итого: ${fmt(finalTotal)} ₸ (в месяц: ${fmt(finalMonthly)} ₸)\n\nПрайс-лист во вложении 👆`;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
   }, 800);
 }
