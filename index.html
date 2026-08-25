@@ -218,6 +218,59 @@ body {
   margin-top: 10px;
 }
 
+.discount-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.discount-check-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  user-select: none;
+}
+
+.discount-check-label input[type=checkbox] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.discount-check-label input[type=checkbox]:checked {
+  background: var(--orange);
+  border-color: var(--orange);
+}
+
+.discount-check-label input[type=checkbox]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 8px;
+  height: 12px;
+  border: 2.5px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+.discount-check-label:hover input[type=checkbox] {
+  border-color: var(--orange);
+}
+
 /* ── Result header ──────────────────────────────────────────────────────── */
 .result-header {
   display: flex;
@@ -592,10 +645,19 @@ body {
       <!-- DISCOUNTS -->
       <div class="section" id="section-discounts" style="display:none">
         <div class="section-label">Скидки</div>
-        <div class="chips" id="chips-discounts" style="flex-direction:column;align-items:flex-start;">
-          <button class="chip" data-discount="stream"  data-rate="0.20" onclick="toggleDiscount(this)">⚡ Действующий поток (−20%)</button>
-          <button class="chip" data-discount="benefit" data-rate="0.10" onclick="toggleDiscount(this)">📄 Льгота (−10%)</button>
-          <button class="chip" data-discount="result"  data-rate="0.10" onclick="toggleDiscount(this)">👨‍👩‍👧‍👦 2 или более детей из семьи (−10%)</button>
+        <div class="discount-checks" id="chips-discounts">
+          <label class="discount-check-label">
+            <input type="checkbox" data-discount="stream"  onchange="toggleDiscount(this)">
+            <span>⚡ Действующий поток (−20%)</span>
+          </label>
+          <label class="discount-check-label">
+            <input type="checkbox" data-discount="benefit" onchange="toggleDiscount(this)">
+            <span>📄 Льгота (−10%)</span>
+          </label>
+          <label class="discount-check-label">
+            <input type="checkbox" data-discount="result"  onchange="toggleDiscount(this)">
+            <span>👨‍👩‍👧‍👦 2 или более детей из семьи (−10%)</span>
+          </label>
         </div>
         <div class="hint-discounts">Скидки суммируются · применяются к итоговой сумме</div>
       </div>
@@ -804,21 +866,20 @@ function onCustomMonthsChange(input) {
   }
 }
 
-function toggleDiscount(btn) {
-  const id = btn.dataset.discount;
-  if (state.discounts.has(id)) {
-    state.discounts.delete(id);
-    btn.classList.remove('active-discount');
-  } else {
+function toggleDiscount(checkbox) {
+  const id = checkbox.dataset.discount;
+  if (checkbox.checked) {
     state.discounts.add(id);
-    btn.classList.add('active-discount');
+  } else {
+    state.discounts.delete(id);
   }
   render();
 }
 
 function resetAll() {
   state = { grade: null, period: null, customMonths: null, discounts: new Set() };
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active-primary','active-discount'));
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active-primary'));
+  document.querySelectorAll('#chips-discounts input[type=checkbox]').forEach(cb => cb.checked = false);
   document.getElementById('section-period').style.display = 'none';
   document.getElementById('section-discounts').style.display = 'none';
   document.getElementById('chips-period').innerHTML = '';
