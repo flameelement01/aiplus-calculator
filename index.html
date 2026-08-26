@@ -97,6 +97,31 @@ body {
   text-transform: uppercase;
 }
 
+/* ── Lang toggle ─────────────────────────────────────────────────────────── */
+.lang-toggle {
+  display: flex;
+  background: rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+.lang-btn {
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+}
+.lang-btn.active { background: var(--orange); color: #fff; }
+.lang-btn:hover:not(.active) { color: rgba(255,255,255,0.85); }
+
 /* ── Layout ─────────────────────────────────────────────────────────────── */
 .page {
   max-width: 1080px;
@@ -612,7 +637,13 @@ body {
     <img class="logo-icon" src="https://static.tildacdn.pro/tild6138-6238-4632-b230-313838323361/logo.svg" alt="AiPLUS">
     <div class="logo-text">Ai<span>PLUS</span></div>
   </div>
-  <div class="header-badge">Калькулятор цен</div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="header-badge" data-i18n="header.badge">Калькулятор цен</div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="ru" onclick="applyLang('ru')">RU</button>
+      <button class="lang-btn" data-lang="kz" onclick="applyLang('kz')">ҚАЗ</button>
+    </div>
+  </div>
 </header>
 
 <!-- ── Page ── -->
@@ -621,11 +652,11 @@ body {
   <!-- LEFT -->
   <div class="col-left">
     <div class="card">
-      <div class="form-title">Подберите абонемент</div>
+      <div class="form-title" data-i18n="form.title">Подберите абонемент</div>
 
       <!-- CLASS -->
       <div class="section">
-        <div class="section-label">Класс</div>
+        <div class="section-label" data-i18n="lbl.grade">Класс</div>
         <div class="chips" id="chips-grade">
           <button class="chip" data-grade="039" onclick="selectGrade(this)">0–3 / 7–9 кл</button>
           <button class="chip" data-grade="45"  onclick="selectGrade(this)">4–5 кл</button>
@@ -637,38 +668,38 @@ body {
 
       <!-- PERIOD -->
       <div class="section" id="section-period" style="display:none">
-        <div class="section-label">Период обучения</div>
+        <div class="section-label" data-i18n="lbl.period">Период обучения</div>
         <div class="chips" id="chips-period"></div>
         <div class="hint-text" id="period-hint" style="display:none"></div>
       </div>
 
       <!-- DISCOUNTS -->
       <div class="section" id="section-discounts" style="display:none">
-        <div class="section-label">Скидки</div>
+        <div class="section-label" data-i18n="lbl.discounts">Скидки</div>
         <div class="discount-checks" id="chips-discounts">
           <label class="discount-check-label">
             <input type="checkbox" data-discount="stream"  onchange="toggleDiscount(this)">
-            <span>⚡ Действующий поток (−20%)</span>
+            <span data-i18n="disc.stream.chip">⚡ Действующий поток (−20%)</span>
           </label>
           <label class="discount-check-label">
             <input type="checkbox" data-discount="benefit" onchange="toggleDiscount(this)">
-            <span>📄 Льгота (−10%)</span>
+            <span data-i18n="disc.benefit.chip">📄 Льгота (−10%)</span>
           </label>
           <label class="discount-check-label">
             <input type="checkbox" data-discount="result"  onchange="toggleDiscount(this)">
-            <span>👨‍👩‍👧‍👦 2 или более детей из семьи (−10%)</span>
+            <span data-i18n="disc.result.chip">👨‍👩‍👧‍👦 2 или более детей из семьи (−10%)</span>
           </label>
         </div>
-        <div class="hint-discounts">Скидки суммируются · применяются к итоговой сумме</div>
+        <div class="hint-discounts" data-i18n="disc.hint">Скидки суммируются · применяются к итоговой сумме</div>
       </div>
     </div>
 
-    <!-- Promo banner (always visible) -->
+    <!-- Promo banner -->
     <div class="promo-banner">
       <div class="promo-icon">⚡</div>
       <div class="promo-text">
-        <div class="promo-title">Скидка <span>−20%</span> за скорость — только <span>24 часа</span></div>
-        <div class="promo-desc">Специальная цена действует, если решение принято в течение суток после консультации.</div>
+        <div class="promo-title" data-i18n-html="promo.title">Скидка <span>−20%</span> за скорость — только <span>24 часа</span></div>
+        <div class="promo-desc" data-i18n="promo.desc">Специальная цена действует, если решение принято в течение суток после консультации.</div>
       </div>
     </div>
   </div>
@@ -677,14 +708,14 @@ body {
   <div class="col-right">
     <div class="card">
       <div class="result-header">
-        <div class="result-label">Итог</div>
-        <button class="reset-btn" onclick="resetAll()">↺ Сбросить</button>
+        <div class="result-label" data-i18n="result.lbl">Итог</div>
+        <button class="reset-btn" onclick="resetAll()" data-i18n="result.reset">↺ Сбросить</button>
       </div>
 
       <!-- Empty -->
       <div id="empty-state" class="empty-state">
         <div class="empty-icon">🎓</div>
-        <div class="empty-text">Выберите класс и период<br>для расчёта стоимости</div>
+        <div class="empty-text" data-i18n-html="empty.text">Выберите класс и период<br>для расчёта стоимости</div>
       </div>
 
       <!-- Result -->
@@ -702,17 +733,17 @@ body {
 
     <!-- Details -->
     <div class="card" id="details-card" style="display:none">
-      <div class="section-label">Детали</div>
+      <div class="section-label" data-i18n="det.lbl">Детали</div>
       <table class="details-table">
-        <tr><td>Класс</td><td id="d-grade"></td></tr>
-        <tr><td>Период</td><td id="d-period"></td></tr>
-        <tr><td>Цена без скидок</td><td id="d-base"></td></tr>
+        <tr><td data-i18n="det.grade">Класс</td><td id="d-grade"></td></tr>
+        <tr><td data-i18n="det.period">Период</td><td id="d-period"></td></tr>
+        <tr><td data-i18n="det.base">Цена без скидок</td><td id="d-base"></td></tr>
         <tr id="d-discount-row" style="display:none">
-          <td>Скидка</td>
+          <td data-i18n="det.disc">Скидка</td>
           <td id="d-discount" class="detail-discount"></td>
         </tr>
-        <tr><td>Итоговая сумма</td><td id="d-total" class="detail-total"></td></tr>
-        <tr><td>В месяц</td><td id="d-monthly"></td></tr>
+        <tr><td data-i18n="det.total">Итоговая сумма</td><td id="d-total" class="detail-total"></td></tr>
+        <tr><td data-i18n="det.monthly">В месяц</td><td id="d-monthly"></td></tr>
       </table>
     </div>
 
@@ -720,113 +751,271 @@ body {
     <div class="kaspi-card" id="kaspi-card" style="display:none">
       <div class="kaspi-header">
         <img src="https://kaspi.kz/img/Logo.svg" alt="Kaspi" style="height:22px;width:auto;vertical-align:middle;margin-right:8px;">
-        Рассрочка
+        <span data-i18n="kaspi.hdr">Рассрочка</span>
       </div>
-      <div class="kaspi-sub">Без переплат · 0−0−12 и 0−0−24</div>
+      <div class="kaspi-sub" data-i18n="kaspi.sub">Без переплат · 0−0−12 и 0−0−24</div>
       <div class="kaspi-grid">
         <div class="kaspi-cell">
           <img src="https://kaspi.kz/img/Logo.svg" alt="Kaspi" style="height:20px;width:auto;margin-bottom:6px;">
           <div class="kaspi-cell-plan">0 – 0 – 12</div>
           <div class="kaspi-cell-amount" id="kaspi-12"></div>
-          <div class="kaspi-cell-note">₸ в месяц · 12 платежей</div>
+          <div class="kaspi-cell-note" data-i18n="kaspi.12note">₸ в месяц · 12 платежей</div>
         </div>
         <div class="kaspi-cell">
           <img src="https://kaspi.kz/img/Logo.svg" alt="Kaspi" style="height:20px;width:auto;margin-bottom:6px;">
           <div class="kaspi-cell-plan">0 – 0 – 24</div>
           <div class="kaspi-cell-amount" id="kaspi-24"></div>
-          <div class="kaspi-cell-note">₸ в месяц · 24 платежа</div>
+          <div class="kaspi-cell-note" data-i18n="kaspi.24note">₸ в месяц · 24 платежа</div>
         </div>
       </div>
     <!-- Send to client -->
     <div class="wa-card" id="wa-card" style="display:none">
-      <div class="wa-label">Отправить клиенту в WhatsApp</div>
+      <div class="wa-label" data-i18n="wa.lbl">Отправить клиенту в WhatsApp</div>
       <div class="wa-row">
         <input class="wa-input" id="wa-phone" type="tel" placeholder="+7 777 123 45 67">
         <button class="wa-btn" onclick="generatePDF()">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.07 6.07l.9-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          Отправить прайс
+          <span data-i18n="wa.btn">Отправить прайс</span>
         </button>
       </div>
-      <div class="wa-hint">PDF скачается автоматически · откроется WhatsApp с кратким сообщением</div>
+      <div class="wa-hint" data-i18n="wa.hint">PDF скачается автоматически · откроется WhatsApp с кратким сообщением</div>
     </div>
   </div>
 </div>
 
 <script>
+// ── i18n ──────────────────────────────────────────────────────────────────────
+let lang = 'ru';
+
+const TR = {
+  ru: {
+    'header.badge':      'Калькулятор цен',
+    'form.title':        'Подберите абонемент',
+    'lbl.grade':         'Класс',
+    'lbl.period':        'Период обучения',
+    'lbl.discounts':     'Скидки',
+    'disc.stream.chip':  '⚡ Действующий поток (−20%)',
+    'disc.benefit.chip': '📄 Льгота (−10%)',
+    'disc.result.chip':  '👨‍👩‍👧‍👦 2 или более детей из семьи (−10%)',
+    'disc.hint':         'Скидки суммируются · применяются к итоговой сумме',
+    'promo.title':       'Скидка <span>−20%</span> за скорость — только <span>24 часа</span>',
+    'promo.desc':        'Специальная цена действует, если решение принято в течение суток после консультации.',
+    'result.lbl':        'Итог',
+    'result.reset':      '↺ Сбросить',
+    'empty.text':        'Выберите класс и период<br>для расчёта стоимости',
+    'det.lbl':           'Детали',
+    'det.grade':         'Класс',
+    'det.period':        'Период',
+    'det.base':          'Цена без скидок',
+    'det.disc':          'Скидка',
+    'det.total':         'Итоговая сумма',
+    'det.monthly':       'В месяц',
+    'kaspi.hdr':         'Рассрочка',
+    'kaspi.sub':         'Без переплат · 0−0−12 и 0−0−24',
+    'kaspi.12note':      '₸ в месяц · 12 платежей',
+    'kaspi.24note':      '₸ в месяц · 24 платежа',
+    'wa.lbl':            'Отправить клиенту в WhatsApp',
+    'wa.btn':            'Отправить прайс',
+    'wa.hint':           'PDF скачается автоматически · откроется WhatsApp с кратким сообщением',
+    'g.039':  '0–3 / 7–9 кл',
+    'g.45':   '4–5 кл',
+    'g.6':    '6 кл',
+    'g.10':   '10 кл',
+    'g.11':   '11 кл',
+    'hint.6': '7 мес — до конца учебного года (НИШ) · 8,5 мес — полный курс для 3 школ',
+    'p.6m':   '6 месяцев',
+    'p.9m':   '9 месяцев',
+    'p.12m':  '12 месяцев',
+    'p.7nis': '7 мес · НИШ',
+    'p.85f':  '8,5 мес · Полный курс (3 школы)',
+    'p.10m':  '10 месяцев',
+    'p.custom':       '✏️ Свой срок',
+    'custom.months':  'месяцев обучения',
+    'custom.min':     'минимум 3 месяца',
+    'monthly.sfx':    '₸ / месяц',
+    'savings':        (s, r) => `★ Экономия ${s} ₸ (−${r}%)`,
+    'disc.stream.lbl':  'Действующий поток −20%',
+    'disc.benefit.lbl': 'Льгота −10%',
+    'disc.result.lbl':  '2 или более детей из семьи −10%',
+    'tier.3':   (rate)           => `3 мес · ${rate} ₸/мес`,
+    'tier.mid': (min, max, rate) => `${min}–${max} мес · ${rate} ₸/мес`,
+    'tier.top': (rate)           => `10–12+ мес · ${rate} ₸/мес`,
+    'custom.lbl':     (m) => `${m} мес`,
+    'custom.lbl.pdf': (m) => `${m} месяцев`,
+    'alert.phone': 'Введите номер телефона клиента',
+    'wa.msg': (g, p, total, monthly) =>
+      `Здравствуйте! Отправляю вам персональный прайс от AiPLUS.\n\n📚 ${g} · ${p}\n💰 Итого: ${total} ₸ (в месяц: ${monthly} ₸)\n\nПрайс-лист во вложении 👆`,
+    'pdf.kp':      'Коммерческое предложение',
+    'pdf.det':     'Детали',
+    'pdf.grade':   'Класс',
+    'pdf.period':  'Период',
+    'pdf.base':    'Цена без скидок',
+    'pdf.disc':    'Скидка',
+    'pdf.total':   'Итоговая сумма',
+    'pdf.monthly': 'В месяц',
+    'pdf.kaspi':   'Kaspi.kz — Рассрочка',
+    'pdf.ksub':    'Без переплат · 0–0–12 и 0–0–24',
+    'pdf.k12note': 'в месяц · 12 платежей',
+    'pdf.k24note': 'в месяц · 24 платежа',
+    'pdf.savings': (s, r) => `★  Экономия ${s} ₸  (−${r}%)`,
+    'pdf.mval':    (v)    => `${v} ₸ / месяц`,
+    'pdf.dval':    (r, s) => `−${r}%  (−${s} ₸)`,
+  },
+  kz: {
+    'header.badge':      'Баға калькуляторы',
+    'form.title':        'Абонемент таңдаңыз',
+    'lbl.grade':         'Сынып',
+    'lbl.period':        'Оқу мерзімі',
+    'lbl.discounts':     'Жеңілдіктер',
+    'disc.stream.chip':  '⚡ Ағымдағы топ (−20%)',
+    'disc.benefit.chip': '📄 Жеңілдік (−10%)',
+    'disc.result.chip':  '👨‍👩‍👧‍👦 Бір отбасынан 2+ бала (−10%)',
+    'disc.hint':         'Жеңілдіктер қосылады · жалпы сомаға қолданылады',
+    'promo.title':       'Жылдамдық үшін <span>−20%</span> жеңілдік — тек <span>24 сағат</span>',
+    'promo.desc':        'Кеңестен кейін бір тәулік ішінде шешім қабылданса, арнайы баға қолданылады.',
+    'result.lbl':        'Нәтиже',
+    'result.reset':      '↺ Тазалау',
+    'empty.text':        'Сынып пен мерзімді<br>таңдаңыз',
+    'det.lbl':           'Мәліметтер',
+    'det.grade':         'Сынып',
+    'det.period':        'Мерзім',
+    'det.base':          'Жеңілдіксіз баға',
+    'det.disc':          'Жеңілдік',
+    'det.total':         'Жалпы сома',
+    'det.monthly':       'Айына',
+    'kaspi.hdr':         'Бөліп төлеу',
+    'kaspi.sub':         'Артық төлемсіз · 0−0−12 және 0−0−24',
+    'kaspi.12note':      '₸ айына · 12 төлем',
+    'kaspi.24note':      '₸ айына · 24 төлем',
+    'wa.lbl':            'Клиентке WhatsApp-та жіберу',
+    'wa.btn':            'Прайс жіберу',
+    'wa.hint':           'PDF автоматты жүктеледі · WhatsApp қысқа хабарламамен ашылады',
+    'g.039':  '0–3 / 7–9 сынып',
+    'g.45':   '4–5 сынып',
+    'g.6':    '6 сынып',
+    'g.10':   '10 сынып',
+    'g.11':   '11 сынып',
+    'hint.6': '7 ай — оқу жылының соңына дейін (НЗМ) · 8,5 ай — 3 мектеп толық курс',
+    'p.6m':   '6 ай',
+    'p.9m':   '9 ай',
+    'p.12m':  '12 ай',
+    'p.7nis': '7 ай · НЗМ',
+    'p.85f':  '8,5 ай · Толық курс (3 мектеп)',
+    'p.10m':  '10 ай',
+    'p.custom':       '✏️ Өз мерзімім',
+    'custom.months':  'оқу айы',
+    'custom.min':     'минимум 3 ай',
+    'monthly.sfx':    '₸ / ай',
+    'savings':        (s, r) => `★ Үнем ${s} ₸ (−${r}%)`,
+    'disc.stream.lbl':  'Ағымдағы топ −20%',
+    'disc.benefit.lbl': 'Жеңілдік −10%',
+    'disc.result.lbl':  'Бір отбасынан 2+ бала −10%',
+    'tier.3':   (rate)           => `3 ай · ${rate} ₸/ай`,
+    'tier.mid': (min, max, rate) => `${min}–${max} ай · ${rate} ₸/ай`,
+    'tier.top': (rate)           => `10–12+ ай · ${rate} ₸/ай`,
+    'custom.lbl':     (m) => `${m} ай`,
+    'custom.lbl.pdf': (m) => `${m} ай`,
+    'alert.phone': 'Клиенттің телефон нөмірін енгізіңіз',
+    'wa.msg': (g, p, total, monthly) =>
+      `Сәлеметсіздер! AiPLUS-тан жеке прайс жіберіп отырмын.\n\n📚 ${g} · ${p}\n💰 Барлығы: ${total} ₸ (айына: ${monthly} ₸)\n\nПрайс тізімі қосымшада 👆`,
+    'pdf.kp':      'Коммерциялық ұсыныс',
+    'pdf.det':     'Мәліметтер',
+    'pdf.grade':   'Сынып',
+    'pdf.period':  'Мерзім',
+    'pdf.base':    'Жеңілдіксіз баға',
+    'pdf.disc':    'Жеңілдік',
+    'pdf.total':   'Жалпы сома',
+    'pdf.monthly': 'Айына',
+    'pdf.kaspi':   'Kaspi.kz — Бөліп төлеу',
+    'pdf.ksub':    'Артық төлемсіз · 0–0–12 және 0–0–24',
+    'pdf.k12note': 'айына · 12 төлем',
+    'pdf.k24note': 'айына · 24 төлем',
+    'pdf.savings': (s, r) => `★  Үнем ${s} ₸  (−${r}%)`,
+    'pdf.mval':    (v)    => `${v} ₸ / ай`,
+    'pdf.dval':    (r, s) => `−${r}%  (−${s} ₸)`,
+  }
+};
+
+function t(key, ...args) {
+  const val = TR[lang][key];
+  return typeof val === 'function' ? val(...args) : (val ?? key);
+}
+
 // ── Data ──────────────────────────────────────────────────────────────────────
 const GRADES = {
   '039': {
-    label: '0–3 / 7–9 кл',
+    labelKey: 'g.039',
     periods: [
-      { label: '6 месяцев',  total: 866000,  monthly: 144375 },
-      { label: '9 месяцев',  total: 1213000, monthly: 134675 },
-      { label: '12 месяцев', total: 1487000, monthly: 123901 },
+      { labelKey: 'p.6m',  total: 866000,  monthly: 144375 },
+      { labelKey: 'p.9m',  total: 1213000, monthly: 134675 },
+      { labelKey: 'p.12m', total: 1487000, monthly: 123901 },
     ]
   },
   '45': {
-    label: '4–5 кл',
+    labelKey: 'g.45',
     periods: [
-      { label: '6 месяцев',  total: 820000,  monthly: 136599 },
-      { label: '9 месяцев',  total: 1143000, monthly: 126979 },
-      { label: '12 месяцев', total: 1402000, monthly: 116821 },
+      { labelKey: 'p.6m',  total: 820000,  monthly: 136599 },
+      { labelKey: 'p.9m',  total: 1143000, monthly: 126979 },
+      { labelKey: 'p.12m', total: 1402000, monthly: 116821 },
     ],
     customTiers: [
-      { min: 3, max: 3, monthly: 146333 },
-      { min: 4, max: 6, monthly: 136599 },
-      { min: 7, max: 9, monthly: 126979 },
+      { min: 3, max: 3,        monthly: 146333 },
+      { min: 4, max: 6,        monthly: 136599 },
+      { min: 7, max: 9,        monthly: 126979 },
       { min: 10, max: Infinity, monthly: 116821 },
     ]
   },
   '6': {
-    label: '6 кл',
-    hint: '7 мес — до конца учебного года (НИШ) · 8,5 мес — полный курс для 3 школ',
+    labelKey: 'g.6',
+    hintKey: 'hint.6',
     periods: [
-      { label: '6 месяцев',                     total: 820000,  monthly: 136599 },
-      { label: '7 мес · НИШ',                   total: 957000,  monthly: 136599 },
-      { label: '8,5 мес · Полный курс (3 школы)', total: 1162000, monthly: 136599, wide: true },
+      { labelKey: 'p.6m',   total: 820000,  monthly: 136599 },
+      { labelKey: 'p.7nis', total: 957000,  monthly: 136599 },
+      { labelKey: 'p.85f',  total: 1162000, monthly: 136599, wide: true },
     ]
   },
   '10': {
-    label: '10 кл',
+    labelKey: 'g.10',
     periods: [
-      { label: '6 месяцев',  total: 924000,  monthly: 153914 },
-      { label: '9 месяцев',  total: 1334000, monthly: 148142 },
-      { label: '12 месяцев', total: 1636000, monthly: 136291 },
+      { labelKey: 'p.6m',  total: 924000,  monthly: 153914 },
+      { labelKey: 'p.9m',  total: 1334000, monthly: 148142 },
+      { labelKey: 'p.12m', total: 1636000, monthly: 136291 },
     ],
     customTiers: [
-      { min: 3, max: 3, monthly: 154000 },
-      { min: 4, max: 6, monthly: 153914 },
-      { min: 7, max: 9, monthly: 148142 },
+      { min: 3, max: 3,        monthly: 154000  },
+      { min: 4, max: 6,        monthly: 153914  },
+      { min: 7, max: 9,        monthly: 148142  },
       { min: 10, max: Infinity, monthly: 136291 },
     ]
   },
   '11': {
-    label: '11 кл',
+    labelKey: 'g.11',
     periods: [
-      { label: '6 месяцев',    total: 993000,  monthly: 165457 },
-      { label: '9 месяцев',    total: 1316000, monthly: 146218 },
-      { label: '10 месяцев',   total: 1346000, monthly: 134521 },
+      { labelKey: 'p.6m',  total: 993000,  monthly: 165457 },
+      { labelKey: 'p.9m',  total: 1316000, monthly: 146218 },
+      { labelKey: 'p.10m', total: 1346000, monthly: 134521 },
     ]
   },
 };
 
 const DISCOUNTS = {
-  stream:  { label: 'Действующий поток −20%', rate: 0.20 },
-  benefit: { label: 'Льгота −10%',              rate: 0.10 },
-  result:  { label: '2 или более детей из семьи −10%', rate: 0.10 },
+  stream:  { labelKey: 'disc.stream.lbl',  rate: 0.20 },
+  benefit: { labelKey: 'disc.benefit.lbl', rate: 0.10 },
+  result:  { labelKey: 'disc.result.lbl',  rate: 0.10 },
 };
 
 let state = { grade: null, period: null, customMonths: null, discounts: new Set() };
 
 // ── Format ────────────────────────────────────────────────────────────────────
 function fmt(n) {
-  return Math.round(n).toLocaleString('ru-RU').replace(/ /g, ' ');
+  return Math.round(n).toLocaleString('ru-RU').replace(/ /g, ' ');
 }
 
 // ── Actions ───────────────────────────────────────────────────────────────────
 function selectGrade(btn) {
   state.grade = btn.dataset.grade;
   state.period = null;
+  state.customMonths = null;
   document.querySelectorAll('#chips-grade .chip').forEach(c => c.classList.remove('active-primary'));
   btn.classList.add('active-primary');
   renderPeriods();
@@ -895,7 +1084,7 @@ function renderPeriods() {
     const btn = document.createElement('button');
     btn.className = 'chip' + (p.wide ? ' period-wide' : '');
     btn.dataset.idx = i;
-    btn.textContent = p.label;
+    btn.textContent = t(p.labelKey);
     btn.onclick = () => selectPeriod(btn);
     container.appendChild(btn);
   });
@@ -904,7 +1093,7 @@ function renderPeriods() {
     const btn = document.createElement('button');
     btn.className = 'chip';
     btn.dataset.idx = 'custom';
-    btn.innerHTML = '✏️ Свой срок';
+    btn.textContent = t('p.custom');
     btn.onclick = () => selectCustomPeriod(btn);
     container.appendChild(btn);
 
@@ -916,24 +1105,24 @@ function renderPeriods() {
       <input id="custom-months-input" class="custom-months-input" type="number" min="3" max="36"
         placeholder="3" oninput="onCustomMonthsChange(this)">
       <div>
-        <div class="custom-months-label">месяцев обучения</div>
-        <div class="custom-tier-info" id="custom-tier-info">минимум 3 месяца</div>
+        <div class="custom-months-label">${t('custom.months')}</div>
+        <div class="custom-tier-info" id="custom-tier-info">${t('custom.min')}</div>
       </div>`;
     container.appendChild(row);
   }
 
   const hint = document.getElementById('period-hint');
-  if (g.hint) { hint.textContent = g.hint; hint.style.display = ''; }
+  if (g.hintKey) { hint.textContent = t(g.hintKey); hint.style.display = ''; }
   else { hint.style.display = 'none'; }
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
 function getCustomTierLabel(g, months) {
-  const t = g.customTiers.find(t => months >= t.min && months <= t.max);
-  if (!t) return '';
-  if (months === 3) return `3 мес · ${fmt(t.monthly)} ₸/мес`;
-  if (t.max === Infinity) return `10–12+ мес · ${fmt(t.monthly)} ₸/мес`;
-  return `${t.min}–${t.max} мес · ${fmt(t.monthly)} ₸/мес`;
+  const tier = g.customTiers.find(ti => months >= ti.min && months <= ti.max);
+  if (!tier) return '';
+  if (months === 3) return t('tier.3', fmt(tier.monthly));
+  if (tier.max === Infinity) return t('tier.top', fmt(tier.monthly));
+  return t('tier.mid', tier.min, tier.max, fmt(tier.monthly));
 }
 
 function render() {
@@ -952,15 +1141,17 @@ function render() {
   }
 
   const g = GRADES[state.grade];
-  let p;
+  let p, pLabel;
   if (isCustom) {
     const months = state.customMonths;
-    const tier = g.customTiers.find(t => months >= t.min && months <= t.max);
-    p = { label: `${months} мес`, total: months * tier.monthly, monthly: tier.monthly };
+    const tier = g.customTiers.find(ti => months >= ti.min && months <= ti.max);
+    p = { total: months * tier.monthly, monthly: tier.monthly };
+    pLabel = t('custom.lbl', months);
     const infoEl = document.getElementById('custom-tier-info');
     if (infoEl) infoEl.textContent = getCustomTierLabel(g, months);
   } else {
     p = g.periods[state.period];
+    pLabel = t(p.labelKey);
   }
 
   let discountRate = 0;
@@ -971,37 +1162,31 @@ function render() {
   const finalMonthly = Math.round(p.monthly * (1 - discountRate));
   const savings      = p.total - finalTotal;
   const hasDiscount  = discountRate > 0;
+  const gLabel       = t(g.labelKey);
 
-  // Title
-  document.getElementById('price-subtitle').textContent = g.label + ' · ' + p.label;
-
-  // Price
+  document.getElementById('price-subtitle').textContent = gLabel + ' · ' + pLabel;
   document.getElementById('price-final').textContent = fmt(finalTotal) + ' ₸';
   const origEl = document.getElementById('price-original');
   origEl.style.display = hasDiscount ? '' : 'none';
   if (hasDiscount) origEl.textContent = fmt(p.total) + ' ₸';
 
-  // Monthly
-  document.getElementById('price-monthly').textContent = fmt(finalMonthly) + ' ₸ / месяц';
+  document.getElementById('price-monthly').textContent = fmt(finalMonthly) + ' ' + t('monthly.sfx');
 
-  // Savings
   const badge = document.getElementById('savings-badge');
   badge.style.display = hasDiscount ? '' : 'none';
-  if (hasDiscount) badge.textContent = '★ Экономия ' + fmt(savings) + ' ₸ (−' + Math.round(discountRate * 100) + '%)';
+  if (hasDiscount) badge.textContent = t('savings', fmt(savings), Math.round(discountRate * 100));
 
-  // Applied pills
   const pills = document.getElementById('applied-discounts');
   pills.innerHTML = '';
   state.discounts.forEach(id => {
     const el = document.createElement('span');
     el.className = 'applied-pill';
-    el.textContent = DISCOUNTS[id].label;
+    el.textContent = t(DISCOUNTS[id].labelKey);
     pills.appendChild(el);
   });
 
-  // Details
-  document.getElementById('d-grade').textContent   = g.label;
-  document.getElementById('d-period').textContent  = p.label;
+  document.getElementById('d-grade').textContent   = gLabel;
+  document.getElementById('d-period').textContent  = pLabel;
   document.getElementById('d-base').textContent    = fmt(p.total) + ' ₸';
   const discRow = document.getElementById('d-discount-row');
   if (hasDiscount) {
@@ -1014,25 +1199,26 @@ function render() {
   document.getElementById('d-total').textContent   = fmt(finalTotal) + ' ₸';
   document.getElementById('d-monthly').textContent = fmt(finalMonthly) + ' ₸';
 
-  // Kaspi
   document.getElementById('kaspi-12').textContent = fmt(Math.round(finalTotal / 12));
   document.getElementById('kaspi-24').textContent = fmt(Math.round(finalTotal / 24));
 
-  // WhatsApp
   document.getElementById('wa-card').style.display = '';
 }
 
 function buildPDFData() {
   const g = GRADES[state.grade];
   const isCustom = state.period === 'custom';
-  let p;
+  let p, pLabel;
   if (isCustom) {
     const months = state.customMonths;
-    const tier = g.customTiers.find(t => months >= t.min && months <= t.max);
-    p = { label: `${months} месяцев`, total: months * tier.monthly, monthly: tier.monthly };
+    const tier = g.customTiers.find(ti => months >= ti.min && months <= ti.max);
+    p = { total: months * tier.monthly, monthly: tier.monthly };
+    pLabel = t('custom.lbl.pdf', months);
   } else {
     p = g.periods[state.period];
+    pLabel = t(p.labelKey);
   }
+  const gLabel = t(g.labelKey);
   let discountRate = 0;
   state.discounts.forEach(id => { discountRate += DISCOUNTS[id].rate; });
   discountRate = Math.min(discountRate, 0.40);
@@ -1040,7 +1226,7 @@ function buildPDFData() {
   const finalMonthly = Math.round(p.monthly * (1 - discountRate));
   const savings      = p.total - finalTotal;
   const hasDiscount  = discountRate > 0;
-  return { g, p, discountRate, finalTotal, finalMonthly, savings, hasDiscount };
+  return { g, gLabel, p, pLabel, discountRate, finalTotal, finalMonthly, savings, hasDiscount };
 }
 
 function generatePDF() {
@@ -1050,28 +1236,32 @@ function generatePDF() {
   if (isCustom && !state.customMonths) return;
 
   const rawPhone = document.getElementById('wa-phone').value.replace(/\D/g, '');
-  if (rawPhone.length < 10) { alert('Введите номер телефона клиента'); return; }
+  if (rawPhone.length < 10) { alert(t('alert.phone')); return; }
   const phone = rawPhone.startsWith('8') ? '7' + rawPhone.slice(1) : rawPhone;
 
-  const { g, p, discountRate, finalTotal, finalMonthly, savings, hasDiscount } = buildPDFData();
+  const { g, gLabel, p, pLabel, discountRate, finalTotal, finalMonthly, savings, hasDiscount } = buildPDFData();
 
-  // Populate PDF template
   const tpl = document.getElementById('pdf-tpl');
-  tpl.querySelector('.ptpl-grade').textContent  = `${g.label} · ${p.label}`;
+
+  // Apply current language to PDF static labels
+  tpl.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+
+  // Populate dynamic values
+  tpl.querySelector('.ptpl-grade').textContent  = `${gLabel} · ${pLabel}`;
   tpl.querySelector('.ptpl-price').textContent  = fmt(finalTotal) + ' ₸';
   const origEl = tpl.querySelector('.ptpl-original');
   origEl.textContent = hasDiscount ? fmt(p.total) + ' ₸' : '';
   origEl.style.display = hasDiscount ? '' : 'none';
-  tpl.querySelector('.ptpl-monthly').textContent = fmt(finalMonthly) + ' ₸ / месяц';
+  tpl.querySelector('.ptpl-monthly').textContent = t('pdf.mval', fmt(finalMonthly));
   const badge = tpl.querySelector('.ptpl-badge');
   badge.style.display = hasDiscount ? '' : 'none';
-  badge.textContent = hasDiscount ? `★  Экономия ${fmt(savings)} ₸  (−${Math.round(discountRate*100)}%)` : '';
-  tpl.querySelector('.ptpl-d-grade').textContent  = g.label;
-  tpl.querySelector('.ptpl-d-period').textContent = p.label;
+  badge.textContent = hasDiscount ? t('pdf.savings', fmt(savings), Math.round(discountRate*100)) : '';
+  tpl.querySelector('.ptpl-d-grade').textContent  = gLabel;
+  tpl.querySelector('.ptpl-d-period').textContent = pLabel;
   tpl.querySelector('.ptpl-d-base').textContent   = fmt(p.total) + ' ₸';
   const discRow = tpl.querySelector('.ptpl-d-disc-row');
   discRow.style.display = hasDiscount ? '' : 'none';
-  tpl.querySelector('.ptpl-d-disc').textContent = `−${Math.round(discountRate*100)}%  (−${fmt(savings)} ₸)`;
+  tpl.querySelector('.ptpl-d-disc').textContent = t('pdf.dval', Math.round(discountRate*100), fmt(savings));
   tpl.querySelector('.ptpl-d-total').textContent  = fmt(finalTotal) + ' ₸';
   tpl.querySelector('.ptpl-d-monthly').textContent = fmt(finalMonthly) + ' ₸';
   tpl.querySelector('.ptpl-k12').textContent = fmt(Math.round(finalTotal/12)) + ' ₸';
@@ -1082,7 +1272,7 @@ function generatePDF() {
     state.discounts.forEach(id => {
       const s = document.createElement('span');
       s.className = 'ptpl-pill';
-      s.textContent = DISCOUNTS[id].label;
+      s.textContent = t(DISCOUNTS[id].labelKey);
       pillsEl.appendChild(s);
     });
   }
@@ -1098,15 +1288,45 @@ function generatePDF() {
     const W = canvas.width / 2, H = canvas.height / 2;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'px', format: [W, H] });
     doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, W, H);
-    const fileName = `AiPLUS_${g.label.replace(/\s/g,'_')}_${p.label.replace(/\s/g,'_')}.pdf`;
+    const fileName = `AiPLUS_${gLabel.replace(/\s/g,'_')}_${pLabel.replace(/\s/g,'_')}.pdf`;
     doc.save(fileName);
     setTimeout(() => {
-      const msg = `Здравствуйте! Отправляю вам персональный прайс от AiPLUS.\n\n📚 ${g.label} · ${p.label}\n💰 Итого: ${fmt(finalTotal)} ₸ (в месяц: ${fmt(finalMonthly)} ₸)\n\nПрайс-лист во вложении 👆`;
+      const msg = t('wa.msg', gLabel, pLabel, fmt(finalTotal), fmt(finalMonthly));
       window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
     }, 600);
   });
+}
 
-  // dummy vars to avoid unused error
+// ── Language toggle ───────────────────────────────────────────────────────────
+function applyLang(newLang) {
+  lang = newLang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-html]').forEach(el => el.innerHTML = t(el.dataset.i18nHtml));
+  // Update grade chip labels
+  document.querySelectorAll('#chips-grade .chip').forEach(btn => btn.textContent = t('g.' + btn.dataset.grade));
+  // Re-render period chips (preserving selection state)
+  if (state.grade) {
+    const savedPeriod = state.period;
+    const savedCustomMonths = state.customMonths;
+    renderPeriods();
+    if (savedPeriod === 'custom') {
+      const customBtn = document.querySelector('#chips-period [data-idx="custom"]');
+      if (customBtn) customBtn.classList.add('active-primary');
+      const row = document.getElementById('custom-months-row');
+      if (row) {
+        row.style.display = '';
+        const inp = document.getElementById('custom-months-input');
+        if (inp && savedCustomMonths) inp.value = savedCustomMonths;
+      }
+    } else if (savedPeriod !== null) {
+      const btn = document.querySelector(`#chips-period [data-idx="${savedPeriod}"]`);
+      if (btn) btn.classList.add('active-primary');
+    }
+    state.period = savedPeriod;
+    state.customMonths = savedCustomMonths;
+  }
+  render();
 }
 
 render();
@@ -1121,7 +1341,7 @@ render();
       <div style="font-size:26px;font-weight:900;color:#fff;letter-spacing:-1px;">AiPLUS</div>
       <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;">mektep.aiplus.kz</div>
     </div>
-    <div style="font-size:10px;font-weight:700;color:#f5920a;letter-spacing:0.1em;text-transform:uppercase;">Коммерческое предложение</div>
+    <div data-i18n="pdf.kp" style="font-size:10px;font-weight:700;color:#f5920a;letter-spacing:0.1em;text-transform:uppercase;">Коммерческое предложение</div>
   </div>
 
   <!-- Price block -->
@@ -1141,30 +1361,30 @@ render();
 
   <!-- Details -->
   <div style="padding:24px 36px;">
-    <div style="font-size:10px;font-weight:700;color:#9a9793;letter-spacing:0.09em;text-transform:uppercase;margin-bottom:14px;">Детали</div>
+    <div data-i18n="pdf.det" style="font-size:10px;font-weight:700;color:#9a9793;letter-spacing:0.09em;text-transform:uppercase;margin-bottom:14px;">Детали</div>
     <table style="width:100%;border-collapse:collapse;">
       <tr style="border-bottom:1px solid #f5f4f1;">
-        <td style="padding:10px 0;font-size:14px;color:#5a5855;width:50%;">Класс</td>
+        <td data-i18n="pdf.grade" style="padding:10px 0;font-size:14px;color:#5a5855;width:50%;">Класс</td>
         <td class="ptpl-d-grade" style="padding:10px 0;font-size:14px;font-weight:600;text-align:right;"></td>
       </tr>
       <tr style="border-bottom:1px solid #f5f4f1;">
-        <td style="padding:10px 0;font-size:14px;color:#5a5855;">Период</td>
+        <td data-i18n="pdf.period" style="padding:10px 0;font-size:14px;color:#5a5855;">Период</td>
         <td class="ptpl-d-period" style="padding:10px 0;font-size:14px;font-weight:600;text-align:right;"></td>
       </tr>
       <tr style="border-bottom:1px solid #f5f4f1;">
-        <td style="padding:10px 0;font-size:14px;color:#5a5855;">Цена без скидок</td>
+        <td data-i18n="pdf.base" style="padding:10px 0;font-size:14px;color:#5a5855;">Цена без скидок</td>
         <td class="ptpl-d-base" style="padding:10px 0;font-size:14px;font-weight:600;text-align:right;"></td>
       </tr>
       <tr class="ptpl-d-disc-row" style="border-bottom:1px solid #f5f4f1;">
-        <td style="padding:10px 0;font-size:14px;color:#d97600;">Скидка</td>
+        <td data-i18n="pdf.disc" style="padding:10px 0;font-size:14px;color:#d97600;">Скидка</td>
         <td class="ptpl-d-disc" style="padding:10px 0;font-size:14px;font-weight:600;text-align:right;color:#d97600;"></td>
       </tr>
       <tr style="border-bottom:1px solid #f5f4f1;">
-        <td style="padding:10px 0;font-size:15px;color:#f5920a;font-weight:700;">Итоговая сумма</td>
+        <td data-i18n="pdf.total" style="padding:10px 0;font-size:15px;color:#f5920a;font-weight:700;">Итоговая сумма</td>
         <td class="ptpl-d-total" style="padding:10px 0;font-size:16px;font-weight:800;text-align:right;color:#f5920a;"></td>
       </tr>
       <tr>
-        <td style="padding:10px 0;font-size:14px;color:#5a5855;">В месяц</td>
+        <td data-i18n="pdf.monthly" style="padding:10px 0;font-size:14px;color:#5a5855;">В месяц</td>
         <td class="ptpl-d-monthly" style="padding:10px 0;font-size:14px;font-weight:600;text-align:right;"></td>
       </tr>
     </table>
@@ -1172,18 +1392,18 @@ render();
 
   <!-- Kaspi -->
   <div style="margin:0 36px 36px;background:#fff4f4;border:1px solid #fcc;border-radius:14px;padding:20px 24px;">
-    <div style="font-size:15px;font-weight:800;color:#e63030;margin-bottom:4px;">Kaspi.kz — Рассрочка</div>
-    <div style="font-size:12px;color:#f87171;margin-bottom:16px;">Без переплат · 0–0–12 и 0–0–24</div>
+    <div data-i18n="pdf.kaspi" style="font-size:15px;font-weight:800;color:#e63030;margin-bottom:4px;">Kaspi.kz — Рассрочка</div>
+    <div data-i18n="pdf.ksub" style="font-size:12px;color:#f87171;margin-bottom:16px;">Без переплат · 0–0–12 и 0–0–24</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <div style="background:#fff;border:1px solid #fcc;border-radius:10px;padding:14px 16px;">
         <div style="font-size:11px;font-weight:700;color:#e63030;margin-bottom:4px;">0 – 0 – 12</div>
         <div class="ptpl-k12" style="font-size:22px;font-weight:900;color:#111;letter-spacing:-0.5px;"></div>
-        <div style="font-size:11px;color:#5a5855;margin-top:4px;">в месяц · 12 платежей</div>
+        <div data-i18n="pdf.k12note" style="font-size:11px;color:#5a5855;margin-top:4px;">в месяц · 12 платежей</div>
       </div>
       <div style="background:#fff;border:1px solid #fcc;border-radius:10px;padding:14px 16px;">
         <div style="font-size:11px;font-weight:700;color:#e63030;margin-bottom:4px;">0 – 0 – 24</div>
         <div class="ptpl-k24" style="font-size:22px;font-weight:900;color:#111;letter-spacing:-0.5px;"></div>
-        <div style="font-size:11px;color:#5a5855;margin-top:4px;">в месяц · 24 платежа</div>
+        <div data-i18n="pdf.k24note" style="font-size:11px;color:#5a5855;margin-top:4px;">в месяц · 24 платежа</div>
       </div>
     </div>
   </div>
