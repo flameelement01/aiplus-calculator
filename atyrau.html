@@ -528,8 +528,9 @@ render();
 
 const AUTH={login:'atyrau',pass:'Aiplus-Atyr26'};
 const ADMIN={login:'admin',pass:'Aiplus-Admin26'};
-function doLogin(){const l=document.getElementById('inp-login').value.trim().toLowerCase();const p=document.getElementById('inp-pass').value;const err=document.getElementById('auth-error');if(l===ADMIN.login&&p===ADMIN.pass){document.getElementById('auth-overlay').style.display='none';}else if(l===AUTH.login&&p===AUTH.pass){document.getElementById('auth-overlay').style.display='none';document.getElementById('city-modal').style.display='flex';}else{err.textContent='Неверный логин или пароль';document.getElementById('inp-pass').value='';}}
+function doLogin(){const l=document.getElementById('inp-login').value.trim().toLowerCase();const p=document.getElementById('inp-pass').value;const err=document.getElementById('auth-error');if(l===ADMIN.login&&p===ADMIN.pass){sessionStorage.setItem('aiplus_admin','1');document.getElementById('auth-overlay').style.display='none';document.getElementById('admin-nav').style.display='flex';}else if(l===AUTH.login&&p===AUTH.pass){document.getElementById('auth-overlay').style.display='none';document.getElementById('city-modal').style.display='flex';}else{err.textContent='Неверный логин или пароль';document.getElementById('inp-pass').value='';}}
 function confirmCity(){document.getElementById('city-modal').style.display='none';}
+if(sessionStorage.getItem('aiplus_admin')==='1'){document.getElementById('auth-overlay').style.display='none';document.getElementById('admin-nav').style.display='flex';}
 </script>
 
 <div id="pdf-tpl" style="display:none;width:680px;font-family:'Inter',system-ui,sans-serif;background:#fff;padding:0;">
@@ -583,5 +584,14 @@ function confirmCity(){document.getElementById('city-modal').style.display='none
     <div style="font-size:12px;color:#64B5F6;font-weight:700;">AiPLUS © 2026</div>
   </div>
 </div>
+<!-- ── Admin Nav ── -->
+<div id="admin-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#1e1d2e;border-top:1px solid rgba(255,255,255,0.1);padding:10px 20px;align-items:center;gap:6px;flex-wrap:wrap;">
+  <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em;padding-right:10px;border-right:1px solid rgba(255,255,255,0.1);margin-right:4px;flex-shrink:0;">👑 Админ</span>
+  <a href="shymkent.html" style="height:30px;padding:0 14px;border-radius:999px;text-decoration:none;display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:rgba(255,255,255,0.45);">🌅 Шымкент</a>
+  <a href="atyrau.html"   style="height:30px;padding:0 14px;border-radius:999px;text-decoration:none;display:inline-flex;align-items:center;font-size:12px;font-weight:700;background:rgba(33,150,243,0.2);color:#2196F3;border:1px solid rgba(33,150,243,0.35);">🌊 Атырау · Актобе</a>
+  <a href="astana.html"   style="height:30px;padding:0 14px;border-radius:999px;text-decoration:none;display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:rgba(255,255,255,0.45);">🏛 Астана · Алматы</a>
+  <a href="online.html"   style="height:30px;padding:0 14px;border-radius:999px;text-decoration:none;display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:rgba(255,255,255,0.45);">💻 Онлайн</a>
+</div>
+
 </body>
 </html>
