@@ -380,7 +380,10 @@ const TR = {
 function t(key,...args){ const v=TR[lang][key]; return typeof v==='function'?v(...args):(v??key); }
 
 const GRADES = {
-  '345':{ labelKey:'g.345', customMonthly:116725, periods:[
+  '345':{ labelKey:'g.345', customTiers:[
+    {min:3,max:3,monthly:146333},{min:4,max:6,monthly:136683},
+    {min:7,max:9,monthly:126856},{min:10,max:Infinity,monthly:116725},
+  ], periods:[
     { labelKey:'p.3m',  total:439000,  monthly:146333 },
     { labelKey:'p.6m',  total:820100,  monthly:136683 },
     { labelKey:'p.9m',  total:1141700, monthly:126856 },
@@ -393,7 +396,10 @@ const GRADES = {
     { labelKey:'p.85f', total:1162000, monthly:136683 },
     { labelKey:'p.9m',  total:1230200, monthly:136683 },
   ]},
-  '10':{ labelKey:'g.10', customMonthly:131158, periods:[
+  '10':{ labelKey:'g.10', customTiers:[
+    {min:3,max:6,monthly:153700},{min:7,max:9,monthly:146522},
+    {min:10,max:Infinity,monthly:131158},
+  ], periods:[
     { labelKey:'p.3m',  total:461100,  monthly:153700 },
     { labelKey:'p.6m',  total:921900,  monthly:153650 },
     { labelKey:'p.9m',  total:1318700, monthly:146522 },
@@ -467,7 +473,7 @@ function renderPeriods(){
     btn.onclick=()=>selectPeriod(btn);
     container.appendChild(btn);
   });
-  if(g.customMonthly){
+  if(g.customTiers){
     const btn=document.createElement('button');
     btn.className='chip'; btn.dataset.idx='custom';
     btn.textContent=t('p.custom');
@@ -475,7 +481,7 @@ function renderPeriods(){
     container.appendChild(btn);
     const row=document.createElement('div');
     row.id='custom-months-row'; row.style.display='none'; row.className='custom-months-row';
-    row.innerHTML=`<input id="custom-months-input" class="custom-months-input" type="number" min="3" max="36" placeholder="3" oninput="onCustomMonthsChange(this)"><div><div class="custom-months-label">${t('custom.months')}</div><div class="custom-tier-info">${t('custom.min')}</div></div>`;
+    row.innerHTML=`<input id="custom-months-input" class="custom-months-input" type="number" min="3" max="36" placeholder="3" oninput="onCustomMonthsChange(this)"><div><div class="custom-months-label">${t('custom.months')}</div><div class="custom-tier-info" id="custom-tier-info">${t('custom.min')}</div></div>`;
     container.appendChild(row);
   }
   const hint=document.getElementById('period-hint');
@@ -485,7 +491,10 @@ function getPeriodData(){
   const g=GRADES[state.grade];
   if(state.period==='custom'){
     const m=state.customMonths;
-    return { p:{total:m*g.customMonthly, monthly:g.customMonthly}, pLabel:t('custom.lbl',m) };
+    const tier=g.customTiers.find(ti=>m>=ti.min&&m<=ti.max);
+    const infoEl=document.getElementById('custom-tier-info');
+    if(infoEl&&tier) infoEl.textContent=fmt(tier.monthly)+' ₸ / '+t('monthly.sfx').split('/')[1].trim();
+    return { p:{total:m*tier.monthly, monthly:tier.monthly}, pLabel:t('custom.lbl',m) };
   }
   const p=g.periods[state.period]; return { p, pLabel:t(p.labelKey) };
 }

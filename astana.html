@@ -303,11 +303,17 @@ const TR={
 function t(key,...args){const v=TR[lang][key];return typeof v==='function'?v(...args):(v??key);}
 
 const GRADES={
-  '039':{labelKey:'g.039',customMonthly:132756,periods:[
+  '039':{labelKey:'g.039',customTiers:[
+    {min:3,max:3,monthly:182800},{min:4,max:6,monthly:153900},
+    {min:7,max:9,monthly:144300},{min:10,max:Infinity,monthly:132756},
+  ],periods:[
     {labelKey:'p.3m',total:548400,monthly:182800},{labelKey:'p.6m',total:923400,monthly:153900},
     {labelKey:'p.9m',total:1298700,monthly:144300},{labelKey:'p.12m',total:1593072,monthly:132756},
   ]},
-  '45':{labelKey:'g.45',customMonthly:137172,periods:[
+  '45':{labelKey:'g.45',customTiers:[
+    {min:3,max:6,monthly:158700},{min:7,max:9,monthly:149100},
+    {min:10,max:Infinity,monthly:137172},
+  ],periods:[
     {labelKey:'p.3m',total:476100,monthly:158700},{labelKey:'p.6m',total:952200,monthly:158700},
     {labelKey:'p.9m',total:1341900,monthly:149100},{labelKey:'p.12m',total:1646064,monthly:137172},
   ]},
@@ -315,7 +321,10 @@ const GRADES={
     {labelKey:'p.3m',total:534000,monthly:178000},{labelKey:'p.6m',total:894600,monthly:149100},
     {labelKey:'p.9m',total:1341900,monthly:149100},{labelKey:'p.12m',total:1646064,monthly:137172},
   ]},
-  '10':{labelKey:'g.10',customMonthly:132756,periods:[
+  '10':{labelKey:'g.10',customTiers:[
+    {min:3,max:6,monthly:163500},{min:7,max:9,monthly:153900},
+    {min:10,max:Infinity,monthly:132756},
+  ],periods:[
     {labelKey:'p.3m',total:490500,monthly:163500},{labelKey:'p.6m',total:981000,monthly:163500},
     {labelKey:'p.9m',total:1385100,monthly:153900},{labelKey:'p.12m',total:1593072,monthly:132756},
   ]},
@@ -333,8 +342,8 @@ function selectCustomPeriod(btn){state.period='custom';state.customMonths=null;d
 function onCustomMonthsChange(input){const v=parseInt(input.value);if(!isNaN(v)&&v>=3){state.customMonths=v;render();}else{state.customMonths=null;render();}}
 function toggleDiscount(cb){if(cb.checked)state.discounts.add(cb.dataset.discount);else state.discounts.delete(cb.dataset.discount);render();}
 function resetAll(){state={grade:null,period:null,customMonths:null,discounts:new Set()};document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active-primary'));document.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);document.getElementById('section-period').style.display='none';document.getElementById('section-discounts').style.display='none';document.getElementById('chips-period').innerHTML='';render();}
-function renderPeriods(){const g=GRADES[state.grade];const c=document.getElementById('chips-period');c.innerHTML='';g.periods.forEach((p,i)=>{const b=document.createElement('button');b.className='chip';b.dataset.idx=i;b.textContent=t(p.labelKey);b.onclick=()=>selectPeriod(b);c.appendChild(b);});if(g.customMonthly){const b=document.createElement('button');b.className='chip';b.dataset.idx='custom';b.textContent=t('p.custom');b.onclick=()=>selectCustomPeriod(b);c.appendChild(b);const row=document.createElement('div');row.id='custom-months-row';row.style.display='none';row.className='custom-months-row';row.innerHTML=`<input id="custom-months-input" class="custom-months-input" type="number" min="3" max="36" placeholder="3" oninput="onCustomMonthsChange(this)"><div><div class="custom-months-label">${t('custom.months')}</div><div class="custom-tier-info">${t('custom.min')}</div></div>`;c.appendChild(row);}document.getElementById('period-hint').style.display='none';}
-function getPeriodData(){const g=GRADES[state.grade];if(state.period==='custom'){const m=state.customMonths;return{p:{total:m*g.customMonthly,monthly:g.customMonthly},pLabel:t('custom.lbl',m)};}const p=g.periods[state.period];return{p,pLabel:t(p.labelKey)};}
+function renderPeriods(){const g=GRADES[state.grade];const c=document.getElementById('chips-period');c.innerHTML='';g.periods.forEach((p,i)=>{const b=document.createElement('button');b.className='chip';b.dataset.idx=i;b.textContent=t(p.labelKey);b.onclick=()=>selectPeriod(b);c.appendChild(b);});if(g.customTiers){const b=document.createElement('button');b.className='chip';b.dataset.idx='custom';b.textContent=t('p.custom');b.onclick=()=>selectCustomPeriod(b);c.appendChild(b);const row=document.createElement('div');row.id='custom-months-row';row.style.display='none';row.className='custom-months-row';row.innerHTML=`<input id="custom-months-input" class="custom-months-input" type="number" min="3" max="36" placeholder="3" oninput="onCustomMonthsChange(this)"><div><div class="custom-months-label">${t('custom.months')}</div><div class="custom-tier-info" id="custom-tier-info">${t('custom.min')}</div></div>`;c.appendChild(row);}document.getElementById('period-hint').style.display='none';}
+function getPeriodData(){const g=GRADES[state.grade];if(state.period==='custom'){const m=state.customMonths;const tier=g.customTiers.find(ti=>m>=ti.min&&m<=ti.max);const infoEl=document.getElementById('custom-tier-info');if(infoEl&&tier)infoEl.textContent=fmt(tier.monthly)+' ₸ / мес';return{p:{total:m*tier.monthly,monthly:tier.monthly},pLabel:t('custom.lbl',m)};}const p=g.periods[state.period];return{p,pLabel:t(p.labelKey)};}
 function render(){const isCustom=state.period==='custom';const show=state.grade!==null&&((isCustom&&state.customMonths!==null)||(!isCustom&&state.period!==null));document.getElementById('empty-state').style.display=show?'none':'';document.getElementById('result-content').style.display=show?'':'none';document.getElementById('details-card').style.display=show?'':'none';document.getElementById('kaspi-card').style.display=show?'':'none';if(!show){document.getElementById('wa-card').style.display='none';return;}
   const g=GRADES[state.grade];const{p,pLabel}=getPeriodData();const gLabel=t(g.labelKey);
   let dr=0;state.discounts.forEach(id=>{dr+=DISCOUNTS[id].rate;});dr=Math.min(dr,0.40);
