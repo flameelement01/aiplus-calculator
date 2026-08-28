@@ -131,6 +131,40 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 </head>
 <body>
 
+<!-- ── Auth Overlay ── -->
+<div id="auth-overlay" style="position:fixed;inset:0;background:#1e1d2e;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="width:100%;max-width:360px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.6);">
+    <div style="background:#2196F3;padding:22px 28px;">
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.75);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">AiPLUS · Калькулятор</div>
+      <div style="font-size:20px;font-weight:900;color:#fff;">🌊 Атырау · Актобе</div>
+    </div>
+    <div style="padding:28px;">
+      <div style="font-size:15px;font-weight:700;color:#111110;margin-bottom:18px;">Вход в систему</div>
+      <input id="inp-login" type="text" autocomplete="username" placeholder="Логин" onkeydown="if(event.key==='Enter')document.getElementById('inp-pass').focus()" style="width:100%;height:46px;border:1.5px solid #e8e6df;border-radius:11px;padding:0 16px;font-size:15px;font-family:inherit;outline:none;margin-bottom:10px;box-sizing:border-box;color:#111;">
+      <input id="inp-pass" type="password" autocomplete="current-password" placeholder="Пароль" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;height:46px;border:1.5px solid #e8e6df;border-radius:11px;padding:0 16px;font-size:15px;font-family:inherit;outline:none;margin-bottom:4px;box-sizing:border-box;color:#111;">
+      <div id="auth-error" style="color:#e63030;font-size:12px;font-weight:600;margin-bottom:12px;min-height:18px;"></div>
+      <button onclick="doLogin()" style="width:100%;height:48px;background:#2196F3;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">Войти →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── City Confirm Modal ── -->
+<div id="city-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;">
+  <div style="width:100%;max-width:380px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.6);">
+    <div style="background:#2196F3;padding:28px;text-align:center;">
+      <div style="font-size:40px;margin-bottom:10px;">🌊</div>
+      <div style="font-size:22px;font-weight:900;color:#fff;">Атырау · Актобе</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-top:6px;">Калькулятор цен AiPLUS</div>
+    </div>
+    <div style="padding:28px;text-align:center;">
+      <div style="font-size:16px;font-weight:800;color:#111110;margin-bottom:8px;">Это ваш город?</div>
+      <div style="font-size:13px;color:#9a9793;line-height:1.6;margin-bottom:24px;">Убедитесь, что открыли прайс для нужного города. Цены в разных городах отличаются.</div>
+      <button onclick="confirmCity()" style="width:100%;height:48px;background:#2196F3;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;">Да, это мой город →</button>
+      <a href="index.html" style="display:block;text-align:center;font-size:13px;color:#9a9793;text-decoration:none;font-weight:500;padding:8px;">← Выбрать другой город</a>
+    </div>
+  </div>
+</div>
+
 <header class="header">
   <div style="display:flex;align-items:center;gap:10px;">
     <a href="index.html" class="back-link" title="Все города">←</a>
@@ -491,6 +525,10 @@ function applyLang(newLang){
   render();
 }
 render();
+
+const AUTH={login:'atyrau',pass:'Aiplus-Atyr26'};
+function doLogin(){const l=document.getElementById('inp-login').value.trim().toLowerCase();const p=document.getElementById('inp-pass').value;const err=document.getElementById('auth-error');if(l===AUTH.login&&p===AUTH.pass){document.getElementById('auth-overlay').style.display='none';const m=document.getElementById('city-modal');m.style.display='flex';}else{err.textContent='Неверный логин или пароль';document.getElementById('inp-pass').value='';}}
+function confirmCity(){document.getElementById('city-modal').style.display='none';}
 </script>
 
 <div id="pdf-tpl" style="display:none;width:680px;font-family:'Inter',system-ui,sans-serif;background:#fff;padding:0;">
