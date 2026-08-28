@@ -363,7 +363,7 @@ const AUTH={login:'astana',pass:'Aiplus-Ast26'};
 const ADMIN={login:'admin',pass:'Aiplus-Admin26'};
 function doLogin(){const l=document.getElementById('inp-login').value.trim().toLowerCase();const p=document.getElementById('inp-pass').value;const err=document.getElementById('auth-error');if(l===ADMIN.login&&p===ADMIN.pass){sessionStorage.setItem('aiplus_admin','1');document.getElementById('auth-overlay').style.display='none';document.getElementById('admin-nav').style.display='flex';}else if(l===AUTH.login&&p===AUTH.pass){document.getElementById('auth-overlay').style.display='none';document.getElementById('city-modal').style.display='flex';}else{err.textContent='Неверный логин или пароль';document.getElementById('inp-pass').value='';}}
 function confirmCity(){document.getElementById('city-modal').style.display='none';}
-if(sessionStorage.getItem('aiplus_admin')==='1'){document.getElementById('auth-overlay').style.display='none';document.getElementById('admin-nav').style.display='flex';}
+document.addEventListener('DOMContentLoaded',function(){if(sessionStorage.getItem('aiplus_admin')==='1'){document.getElementById('auth-overlay').style.display='none';document.getElementById('admin-nav').style.display='flex';}});
 </script>
 
 <div id="pdf-tpl" style="display:none;width:680px;font-family:'Inter',system-ui,sans-serif;background:#fff;padding:0;">
