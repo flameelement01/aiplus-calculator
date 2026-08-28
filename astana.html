@@ -99,6 +99,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .promo-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.3;}
 .promo-title span{color:var(--city-text);}
 .promo-desc{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6;}
+.custom-months-row{display:flex;align-items:center;gap:14px;margin-top:10px;padding:14px 16px;background:var(--city-light);border:1.5px solid var(--city-border);border-radius:12px;}
+.custom-months-input{width:76px;height:48px;border:1.5px solid var(--city-border);border-radius:10px;font-size:22px;font-weight:800;text-align:center;font-family:inherit;color:var(--text);background:#fff;outline:none;flex-shrink:0;}
+.custom-months-input:focus{border-color:var(--city-color);}
+.custom-months-input::-webkit-inner-spin-button,.custom-months-input::-webkit-outer-spin-button{opacity:0.4;}
+.custom-months-label{font-size:14px;color:var(--text2);font-weight:600;margin-bottom:3px;}
+.custom-tier-info{font-size:12px;color:var(--city-color);font-weight:600;}
 </style>
 </head>
 <body>
@@ -260,6 +266,8 @@ const TR={
     'wa.lbl':'Отправить клиенту в WhatsApp','wa.btn':'Отправить прайс','wa.hint':'PDF скачается автоматически · откроется WhatsApp с кратким сообщением',
     'g.039':'0–3 / 7–9 кл','g.45':'4–5 кл','g.6':'6 кл','g.10':'10 кл','g.1112':'11–12 кл',
     'p.3m':'3 месяца','p.6m':'6 месяцев','p.9m':'9 месяцев','p.12m':'12 месяцев',
+    'p.custom':'✏️ Свой срок','custom.months':'месяцев обучения','custom.min':'минимум 3 месяца',
+    'custom.lbl':(m)=>`${m} мес`,'custom.lbl.pdf':(m)=>`${m} месяцев`,
     'monthly.sfx':'₸ / месяц','savings':(s,r)=>`★ Экономия ${s} ₸ (−${r}%)`,
     'disc.stream.lbl':'Действующий поток −20%','disc.benefit.lbl':'Льгота −10%','disc.result.lbl':'2 или более детей из семьи −10%',
     'alert.phone':'Введите номер телефона клиента',
@@ -280,6 +288,8 @@ const TR={
     'wa.lbl':'Клиентке WhatsApp-та жіберу','wa.btn':'Прайс жіберу','wa.hint':'PDF автоматты жүктеледі · WhatsApp қысқа хабарламамен ашылады',
     'g.039':'0–3 / 7–9 сынып','g.45':'4–5 сынып','g.6':'6 сынып','g.10':'10 сынып','g.1112':'11–12 сынып',
     'p.3m':'3 ай','p.6m':'6 ай','p.9m':'9 ай','p.12m':'12 ай',
+    'p.custom':'✏️ Өз мерзімім','custom.months':'оқу айы','custom.min':'минимум 3 ай',
+    'custom.lbl':(m)=>`${m} ай`,'custom.lbl.pdf':(m)=>`${m} ай`,
     'monthly.sfx':'₸ / ай','savings':(s,r)=>`★ Үнем ${s} ₸ (−${r}%)`,
     'disc.stream.lbl':'Ағымдағы топ −20%','disc.benefit.lbl':'Жеңілдік −10%','disc.result.lbl':'Бір отбасынан 2+ бала −10%',
     'alert.phone':'Клиенттің телефон нөмірін енгізіңіз',
@@ -293,11 +303,11 @@ const TR={
 function t(key,...args){const v=TR[lang][key];return typeof v==='function'?v(...args):(v??key);}
 
 const GRADES={
-  '039':{labelKey:'g.039',periods:[
+  '039':{labelKey:'g.039',customMonthly:132756,periods:[
     {labelKey:'p.3m',total:548400,monthly:182800},{labelKey:'p.6m',total:923400,monthly:153900},
     {labelKey:'p.9m',total:1298700,monthly:144300},{labelKey:'p.12m',total:1593072,monthly:132756},
   ]},
-  '45':{labelKey:'g.45',periods:[
+  '45':{labelKey:'g.45',customMonthly:137172,periods:[
     {labelKey:'p.3m',total:476100,monthly:158700},{labelKey:'p.6m',total:952200,monthly:158700},
     {labelKey:'p.9m',total:1341900,monthly:149100},{labelKey:'p.12m',total:1646064,monthly:137172},
   ]},
@@ -305,7 +315,7 @@ const GRADES={
     {labelKey:'p.3m',total:534000,monthly:178000},{labelKey:'p.6m',total:894600,monthly:149100},
     {labelKey:'p.9m',total:1341900,monthly:149100},{labelKey:'p.12m',total:1646064,monthly:137172},
   ]},
-  '10':{labelKey:'g.10',periods:[
+  '10':{labelKey:'g.10',customMonthly:132756,periods:[
     {labelKey:'p.3m',total:490500,monthly:163500},{labelKey:'p.6m',total:981000,monthly:163500},
     {labelKey:'p.9m',total:1385100,monthly:153900},{labelKey:'p.12m',total:1593072,monthly:132756},
   ]},
@@ -315,15 +325,18 @@ const GRADES={
   ]},
 };
 const DISCOUNTS={stream:{labelKey:'disc.stream.lbl',rate:0.20},benefit:{labelKey:'disc.benefit.lbl',rate:0.10},result:{labelKey:'disc.result.lbl',rate:0.10}};
-let state={grade:null,period:null,discounts:new Set()};
+let state={grade:null,period:null,customMonths:null,discounts:new Set()};
 function fmt(n){return Math.round(n).toLocaleString('ru-RU').replace(/ /g,' ');}
-function selectGrade(btn){state.grade=btn.dataset.grade;state.period=null;document.querySelectorAll('#chips-grade .chip').forEach(c=>c.classList.remove('active-primary'));btn.classList.add('active-primary');renderPeriods();document.getElementById('section-period').style.display='';document.getElementById('section-discounts').style.display='';render();}
-function selectPeriod(btn){state.period=parseInt(btn.dataset.idx);document.querySelectorAll('#chips-period .chip').forEach(c=>c.classList.remove('active-primary'));btn.classList.add('active-primary');render();}
+function selectGrade(btn){state.grade=btn.dataset.grade;state.period=null;state.customMonths=null;document.querySelectorAll('#chips-grade .chip').forEach(c=>c.classList.remove('active-primary'));btn.classList.add('active-primary');renderPeriods();document.getElementById('section-period').style.display='';document.getElementById('section-discounts').style.display='';render();}
+function selectPeriod(btn){state.period=parseInt(btn.dataset.idx);state.customMonths=null;document.querySelectorAll('#chips-period .chip').forEach(c=>c.classList.remove('active-primary'));btn.classList.add('active-primary');const row=document.getElementById('custom-months-row');if(row)row.style.display='none';render();}
+function selectCustomPeriod(btn){state.period='custom';state.customMonths=null;document.querySelectorAll('#chips-period .chip').forEach(c=>c.classList.remove('active-primary'));btn.classList.add('active-primary');const row=document.getElementById('custom-months-row');if(row){row.style.display='';document.getElementById('custom-months-input').focus();}render();}
+function onCustomMonthsChange(input){const v=parseInt(input.value);if(!isNaN(v)&&v>=3){state.customMonths=v;render();}else{state.customMonths=null;render();}}
 function toggleDiscount(cb){if(cb.checked)state.discounts.add(cb.dataset.discount);else state.discounts.delete(cb.dataset.discount);render();}
-function resetAll(){state={grade:null,period:null,discounts:new Set()};document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active-primary'));document.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);document.getElementById('section-period').style.display='none';document.getElementById('section-discounts').style.display='none';document.getElementById('chips-period').innerHTML='';render();}
-function renderPeriods(){const g=GRADES[state.grade];const c=document.getElementById('chips-period');c.innerHTML='';g.periods.forEach((p,i)=>{const b=document.createElement('button');b.className='chip';b.dataset.idx=i;b.textContent=t(p.labelKey);b.onclick=()=>selectPeriod(b);c.appendChild(b);});document.getElementById('period-hint').style.display='none';}
-function render(){const show=state.grade!==null&&state.period!==null;document.getElementById('empty-state').style.display=show?'none':'';document.getElementById('result-content').style.display=show?'':'none';document.getElementById('details-card').style.display=show?'':'none';document.getElementById('kaspi-card').style.display=show?'':'none';if(!show){document.getElementById('wa-card').style.display='none';return;}
-  const g=GRADES[state.grade];const p=g.periods[state.period];const pLabel=t(p.labelKey);const gLabel=t(g.labelKey);
+function resetAll(){state={grade:null,period:null,customMonths:null,discounts:new Set()};document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active-primary'));document.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);document.getElementById('section-period').style.display='none';document.getElementById('section-discounts').style.display='none';document.getElementById('chips-period').innerHTML='';render();}
+function renderPeriods(){const g=GRADES[state.grade];const c=document.getElementById('chips-period');c.innerHTML='';g.periods.forEach((p,i)=>{const b=document.createElement('button');b.className='chip';b.dataset.idx=i;b.textContent=t(p.labelKey);b.onclick=()=>selectPeriod(b);c.appendChild(b);});if(g.customMonthly){const b=document.createElement('button');b.className='chip';b.dataset.idx='custom';b.textContent=t('p.custom');b.onclick=()=>selectCustomPeriod(b);c.appendChild(b);const row=document.createElement('div');row.id='custom-months-row';row.style.display='none';row.className='custom-months-row';row.innerHTML=`<input id="custom-months-input" class="custom-months-input" type="number" min="3" max="36" placeholder="3" oninput="onCustomMonthsChange(this)"><div><div class="custom-months-label">${t('custom.months')}</div><div class="custom-tier-info">${t('custom.min')}</div></div>`;c.appendChild(row);}document.getElementById('period-hint').style.display='none';}
+function getPeriodData(){const g=GRADES[state.grade];if(state.period==='custom'){const m=state.customMonths;return{p:{total:m*g.customMonthly,monthly:g.customMonthly},pLabel:t('custom.lbl',m)};}const p=g.periods[state.period];return{p,pLabel:t(p.labelKey)};}
+function render(){const isCustom=state.period==='custom';const show=state.grade!==null&&((isCustom&&state.customMonths!==null)||(!isCustom&&state.period!==null));document.getElementById('empty-state').style.display=show?'none':'';document.getElementById('result-content').style.display=show?'':'none';document.getElementById('details-card').style.display=show?'':'none';document.getElementById('kaspi-card').style.display=show?'':'none';if(!show){document.getElementById('wa-card').style.display='none';return;}
+  const g=GRADES[state.grade];const{p,pLabel}=getPeriodData();const gLabel=t(g.labelKey);
   let dr=0;state.discounts.forEach(id=>{dr+=DISCOUNTS[id].rate;});dr=Math.min(dr,0.40);
   const ft=Math.round(p.total*(1-dr));const fm=Math.round(p.monthly*(1-dr));const sv=p.total-ft;const hd=dr>0;
   document.getElementById('price-subtitle').textContent=gLabel+' · '+pLabel;
@@ -338,8 +351,8 @@ function render(){const show=state.grade!==null&&state.period!==null;document.ge
   document.getElementById('kaspi-12').textContent=fmt(Math.round(ft/12));document.getElementById('kaspi-24').textContent=fmt(Math.round(ft/24));
   document.getElementById('wa-card').style.display='';
 }
-function generatePDF(){if(state.grade===null||state.period===null)return;const rawPhone=document.getElementById('wa-phone').value.replace(/\D/g,'');if(rawPhone.length<10){alert(t('alert.phone'));return;}const phone=rawPhone.startsWith('8')?'7'+rawPhone.slice(1):rawPhone;
-  const g=GRADES[state.grade];const p=g.periods[state.period];const pLabel=t(p.labelKey);const gLabel=t(g.labelKey);
+function generatePDF(){if(state.grade===null)return;const isCustom=state.period==='custom';if(!isCustom&&state.period===null)return;if(isCustom&&!state.customMonths)return;const rawPhone=document.getElementById('wa-phone').value.replace(/\D/g,'');if(rawPhone.length<10){alert(t('alert.phone'));return;}const phone=rawPhone.startsWith('8')?'7'+rawPhone.slice(1):rawPhone;
+  const g=GRADES[state.grade];const{p,pLabel:_pl}=getPeriodData();const pLabel=isCustom?t('custom.lbl.pdf',state.customMonths):_pl;const gLabel=t(g.labelKey);
   let dr=0;state.discounts.forEach(id=>{dr+=DISCOUNTS[id].rate;});dr=Math.min(dr,0.40);
   const ft=Math.round(p.total*(1-dr));const fm=Math.round(p.monthly*(1-dr));const sv=p.total-ft;const hd=dr>0;
   const tpl=document.getElementById('pdf-tpl');
@@ -356,7 +369,9 @@ function generatePDF(){if(state.grade===null||state.period===null)return;const r
   tpl.style.display='block';tpl.style.position='fixed';tpl.style.left='-9999px';tpl.style.visibility='visible';
   html2canvas(tpl,{scale:2,useCORS:true,backgroundColor:'#ffffff'}).then(canvas=>{tpl.style.display='none';const {jsPDF}=window.jspdf;const W=canvas.width/2,H=canvas.height/2;const doc=new jsPDF({orientation:'portrait',unit:'px',format:[W,H]});doc.addImage(canvas.toDataURL('image/png'),'PNG',0,0,W,H);doc.save(`AiPLUS_${gLabel.replace(/\s/g,'_')}_${pLabel.replace(/\s/g,'_')}.pdf`);setTimeout(()=>{const msg=t('wa.msg',gLabel,pLabel,fmt(ft),fmt(fm));window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`,'_blank');},600);});
 }
-function applyLang(newLang){lang=newLang;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));document.querySelectorAll('[data-i18n-html]').forEach(el=>el.innerHTML=t(el.dataset.i18nHtml));document.getElementById('city-badge').textContent=t('city.badge');document.querySelectorAll('#chips-grade .chip').forEach(btn=>btn.textContent=t('g.'+btn.dataset.grade));if(state.grade){const sp=state.period;renderPeriods();if(sp!==null){const b=document.querySelector(`#chips-period [data-idx="${sp}"]`);if(b)b.classList.add('active-primary');state.period=sp;}};render();}
+function applyLang(newLang){lang=newLang;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));document.querySelectorAll('[data-i18n-html]').forEach(el=>el.innerHTML=t(el.dataset.i18nHtml));document.getElementById('city-badge').textContent=t('city.badge');document.querySelectorAll('#chips-grade .chip').forEach(btn=>btn.textContent=t('g.'+btn.dataset.grade));
+  if(state.grade){const sp=state.period;const sc=state.customMonths;renderPeriods();if(sp==='custom'){const b=document.querySelector('#chips-period [data-idx="custom"]');if(b)b.classList.add('active-primary');const row=document.getElementById('custom-months-row');if(row){row.style.display='';if(sc){const inp=document.getElementById('custom-months-input');inp.value=sc;}}}else if(sp!==null){const b=document.querySelector(`#chips-period [data-idx="${sp}"]`);if(b)b.classList.add('active-primary');}state.period=sp;state.customMonths=sc;}
+  render();}
 render();
 
 const AUTH={login:'astanaalmaty',pass:'Aiplus-AstAlm26'};
