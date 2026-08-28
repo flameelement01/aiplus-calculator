@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Атырау · Актобе · AiPLUS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --bg:           #f5f4f1;
+  --surface:      #ffffff;
+  --border:       #e8e6df;
+  --text:         #111110;
+  --text2:        #5a5855;
+  --muted:        #9a9793;
+  --orange:       #f5920a;
+  --orange-deep:  #d97600;
+  --orange-light: #fef3e2;
+  --orange-border:#fcd78a;
+  --dark:         #0b2340;
+  --kaspi:        #e63030;
+  --kaspi-bg:     #fff4f4;
+  --kaspi-border: #fcc;
+  --city-color:   #2196F3;
+  --city-light:   rgba(33,150,243,0.12);
+  --city-border:  rgba(33,150,243,0.3);
+  --city-text:    #64B5F6;
+  --chip-h:   42px;
+  --radius:   14px;
+  --radius-sm: 9px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.5; }
+
+.header { background: var(--dark); padding: 0 20px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.back-link { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 20px; font-weight: 700; padding: 4px 8px; border-radius: 8px; transition: all 0.15s; flex-shrink: 0; }
+.back-link:hover { color: #fff; background: rgba(255,255,255,0.08); }
+.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.logo-icon { height: 36px; width: auto; transform: rotate(-90deg); }
+.logo-text { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: -0.3px; }
+.logo-text span { color: var(--orange); }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.city-badge { font-size: 11px; font-weight: 700; color: var(--city-text); background: var(--city-light); border: 1px solid var(--city-border); padding: 5px 12px; border-radius: 999px; letter-spacing: 0.03em; white-space: nowrap; }
+.lang-toggle { display: flex; background: rgba(255,255,255,0.08); border-radius: 8px; padding: 3px; gap: 2px; }
+.lang-btn { height: 26px; padding: 0 10px; border-radius: 6px; border: none; background: none; color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.lang-btn.active { background: var(--city-color); color: #fff; }
+.lang-btn:hover:not(.active) { color: rgba(255,255,255,0.85); }
+
+.page { max-width: 1080px; margin: 0 auto; padding: 28px 20px 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 720px) { .page { grid-template-columns: 1fr; } .col-right { order: -1; } }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+.card + .card { margin-top: 12px; }
+
+.section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.section + .section { margin-top: 22px; }
+.form-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 24px; letter-spacing: -0.5px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { height: var(--chip-h); padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.15s ease; white-space: nowrap; outline: none; display: inline-flex; align-items: center; gap: 6px; -webkit-tap-highlight-color: transparent; }
+.chip:hover { border-color: var(--city-color); color: var(--city-color); background: var(--city-light); }
+.chip.active-primary { border-color: var(--city-color); background: var(--city-color); color: #fff; font-weight: 700; box-shadow: 0 2px 8px rgba(33,150,243,0.35); }
+
+.hint-text { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
+.hint-discounts { font-size: 12px; color: var(--muted); margin-top: 10px; }
+.discount-checks { display: flex; flex-direction: column; gap: 10px; }
+.discount-check-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text); user-select: none; }
+.discount-check-label input[type=checkbox] { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; min-width: 20px; border: 2px solid var(--border); border-radius: 5px; background: var(--surface); cursor: pointer; position: relative; transition: all 0.15s ease; }
+.discount-check-label input[type=checkbox]:checked { background: var(--city-color); border-color: var(--city-color); }
+.discount-check-label input[type=checkbox]:checked::after { content: ''; position: absolute; left: 4px; top: 1px; width: 8px; height: 12px; border: 2.5px solid #fff; border-top: none; border-left: none; transform: rotate(45deg); }
+.discount-check-label:hover input[type=checkbox] { border-color: var(--city-color); }
+
+.result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.result-label { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); }
+.reset-btn { font-size: 13px; color: var(--muted); background: none; border: none; cursor: pointer; font-family: inherit; padding: 5px 10px; border-radius: 7px; transition: all 0.15s; font-weight: 500; }
+.reset-btn:hover { background: var(--bg); color: var(--text2); }
+
+.empty-state { text-align: center; padding: 36px 16px 28px; }
+.empty-icon { font-size: 40px; margin-bottom: 14px; }
+.empty-text { font-size: 14px; line-height: 1.7; color: var(--muted); }
+
+.price-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 8px; font-weight: 500; min-height: 19px; }
+.price-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; }
+.price-final { font-size: 44px; font-weight: 900; letter-spacing: -2px; line-height: 1; color: var(--text); }
+.price-original { font-size: 20px; font-weight: 500; color: var(--muted); text-decoration: line-through; }
+.price-monthly { font-size: 14px; color: var(--text2); margin-bottom: 14px; font-weight: 500; }
+.savings-badge { display: inline-flex; align-items: center; background: var(--city-color); color: #fff; font-size: 13px; font-weight: 700; padding: 5px 14px; border-radius: 999px; margin-bottom: 12px; }
+.applied-discounts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.applied-pill { font-size: 12px; font-weight: 600; background: var(--city-light); color: var(--city-color); border-radius: 999px; padding: 3px 12px; border: 1px solid var(--city-border); }
+
+.details-table { width: 100%; border-collapse: collapse; }
+.details-table tr { border-bottom: 1px solid var(--bg); }
+.details-table tr:last-child { border-bottom: none; }
+.details-table td { padding: 9px 0; font-size: 14px; vertical-align: middle; }
+.details-table td:first-child { color: var(--text2); width: 48%; }
+.details-table td:last-child { text-align: right; font-weight: 600; }
+.detail-discount { color: var(--orange-deep); }
+.detail-total { color: var(--city-color); font-weight: 800; font-size: 16px; }
+
+.kaspi-card { background: var(--kaspi-bg); border: 1px solid var(--kaspi-border); border-radius: var(--radius); padding: 20px; margin-top: 12px; }
+.kaspi-header { font-size: 15px; font-weight: 800; color: var(--kaspi); margin-bottom: 2px; display: flex; align-items: center; gap: 8px; }
+.kaspi-sub { font-size: 12px; color: #f87171; margin-bottom: 16px; font-weight: 500; }
+.kaspi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kaspi-cell { background: #fff; border: 1px solid var(--kaspi-border); border-radius: var(--radius-sm); padding: 14px; }
+.kaspi-cell-plan { font-size: 14px; font-weight: 800; color: var(--kaspi); margin-bottom: 8px; letter-spacing: -0.3px; }
+.kaspi-cell-amount { font-size: 30px; font-weight: 900; color: var(--text); letter-spacing: -1.5px; line-height: 1; margin-bottom: 4px; }
+.kaspi-cell-note { font-size: 11px; color: var(--text2); font-weight: 500; }
+
+.wa-card { background: var(--dark); border-radius: var(--radius); padding: 20px 22px; margin-top: 12px; }
+.wa-label { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.45); margin-bottom: 12px; letter-spacing: 0.07em; text-transform: uppercase; }
+.wa-row { display: flex; gap: 8px; }
+.wa-input { flex: 1; height: 46px; border: 1.5px solid rgba(255,255,255,0.12); border-radius: 11px; padding: 0 16px; font-size: 15px; font-family: inherit; outline: none; background: rgba(255,255,255,0.07); color: #fff; transition: border-color 0.15s; }
+.wa-input::placeholder { color: rgba(255,255,255,0.3); }
+.wa-input:focus { border-color: var(--city-color); background: rgba(255,255,255,0.10); }
+.wa-btn { height: 46px; padding: 0 20px; background: var(--city-color); color: #fff; border: none; border-radius: 11px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px; white-space: nowrap; font-family: inherit; transition: background 0.15s; }
+.wa-btn:hover { background: #1565C0; }
+.wa-hint { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 10px; line-height: 1.6; }
+
+.promo-banner { background: var(--dark); border-radius: var(--radius); padding: 16px 20px; display: flex; align-items: flex-start; gap: 14px; margin-top: 12px; }
+.promo-icon { width: 38px; height: 38px; background: var(--city-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.promo-text { flex: 1; }
+.promo-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.3; }
+.promo-title span { color: var(--city-text); }
+.promo-desc { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <a href="index.html" class="back-link" title="Все города">←</a>
+    <div class="logo">
+      <img class="logo-icon" src="https://static.tildacdn.pro/tild6138-6238-4632-b230-313838323361/logo.svg" alt="AiPLUS">
+      <div class="logo-text">Ai<span>PLUS</span></div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="city-badge" id="city-badge">🌊 Атырау · Актобе</div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="ru" onclick="applyLang('ru')">RU</button>
+      <button class="lang-btn" data-lang="kz" onclick="applyLang('kz')">ҚАЗ</button>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+  <div class="col-left">
+    <div class="card">
+      <div class="form-title" data-i18n="form.title">Подберите абонемент</div>
+      <div class="section">
+        <div class="section-label" data-i18n="lbl.grade">Класс</div>
+        <div class="chips" id="chips-grade">
+          <button class="chip" data-grade="345" onclick="selectGrade(this)">3-4-5 кл</button>
+          <button class="chip" data-grade="6"   onclick="selectGrade(this)">6 кл</button>
+          <button class="chip" data-grade="10"  onclick="selectGrade(this)">10 кл</button>
+          <button class="chip" data-grade="11"  onclick="selectGrade(this)">11 кл</button>
+        </div>
+      </div>
+      <div class="section" id="section-period" style="display:none">
+        <div class="section-label" data-i18n="lbl.period">Период обучения</div>
+        <div class="chips" id="chips-period"></div>
+        <div class="hint-text" id="period-hint" style="display:none"></div>
+      </div>
+      <div class="section" id="section-discounts" style="display:none">
+        <div class="section-label" data-i18n="lbl.discounts">Скидки</div>
+        <div class="discount-checks">
+          <label class="discount-check-label">
+            <input type="checkbox" data-discount="stream" onchange="toggleDiscount(this)">
+            <span data-i18n="disc.stream.chip">⚡ Действующий поток (−20%)</span>
+          </label>
+          <label class="discount-check-label">
+            <input type="checkbox" data-discount="benefit" onchange="toggleDiscount(this)">
+            <span data-i18n="disc.benefit.chip">📄 Льгота (−10%)</span>
+          </label>
+          <label class="discount-check-label">
+            <input type="checkbox" data-discount="result" onchange="toggleDiscount(this)">
+            <span data-i18n="disc.result.chip">👨‍👩‍👧‍👦 2 или более детей из семьи (−10%)</span>
+          </label>
+        </div>
+        <div class="hint-discounts" data-i18n="disc.hint">Скидки суммируются · применяются к итоговой сумме</div>
+      </div>
+    </div>
+    <div class="promo-banner">
+      <div class="promo-icon">⚡</div>
+      <div class="promo-text">
+        <div class="promo-title" data-i18n-html="promo.title">Скидка <span>−20%</span> за скорость — только <span>24 часа</span></div>
+        <div class="promo-desc" data-i18n="promo.desc">Специальная цена действует, если решение принято в течение суток после консультации.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-right">
+    <div class="card">
+      <div class="result-header">
+        <div class="result-label" data-i18n="result.lbl">Итог</div>
+        <button class="reset-btn" onclick="resetAll()" data-i18n="result.reset">↺ Сбросить</button>
+      </div>
+      <div id="empty-state" class="empty-state">
+        <div class="empty-icon">🎓</div>
+        <div class="empty-text" data-i18n-html="empty.text">Выберите класс и период<br>для расчёта стоимости</div>
+      </div>
+      <div id="result-content" style="display:none">
+        <div class="price-subtitle" id="price-subtitle"></div>
+        <div class="price-row">
+          <div class="price-final" id="price-final"></div>
+          <div class="price-original" id="price-original" style="display:none"></div>
+        </div>
+        <div class="price-monthly" id="price-monthly"></div>
+        <div id="savings-badge" class="savings-badge" style="display:none"></div>
+        <div class="applied-discounts" id="applied-discounts"></div>
+      </div>
+    </div>
+
+    <div class="card" id="details-card" style="display:none">
+      <div class="section-label" data-i18n="det.lbl">Детали</div>
+      <table class="details-table">
+        <tr><td data-i18n="det.grade">Класс</td><td id="d-grade"></td></tr>
+        <tr><td data-i18n="det.period">Период</td><td id="d-period"></td></tr>
+        <tr><td data-i18n="det.base">Цена без скидок</td><td id="d-base"></td></tr>
+        <tr id="d-discount-row" style="display:none">
+          <td data-i18n="det.disc">Скидка</td>
+          <td id="d-discount" class="detail-discount"></td>
+        </tr>
+        <tr><td data-i18n="det.total">Итоговая сумма</td><td id="d-total" class="detail-total"></td></tr>
+        <tr><td data-i18n="det.monthly">В месяц</td><td id="d-monthly"></td></tr>
+      </table>
+    </div>
+
+    <div class="kaspi-card" id="kaspi-card" style="display:none">
+      <div class="kaspi-header">
+        <img src="https://kaspi.kz/img/Logo.svg" alt="Kaspi" style="height:22px;width:auto;">
+        <span data-i18n="kaspi.hdr">Рассрочка</span>
+      </div>
+      <div class="kaspi-sub" data-i18n="kaspi.sub">Без переплат · 0−0−12 и 0−0−24</div>
+      <div class="kaspi-grid">
+        <div class="kaspi-cell">
+          <div class="kaspi-cell-plan">0 – 0 – 12</div>
+          <div class="kaspi-cell-amount" id="kaspi-12"></div>
+          <div class="kaspi-cell-note" data-i18n="kaspi.12note">₸ в месяц · 12 платежей</div>
+        </div>
+        <div class="kaspi-cell">
+          <div class="kaspi-cell-plan">0 – 0 – 24</div>
+          <div class="kaspi-cell-amount" id="kaspi-24"></div>
+          <div class="kaspi-cell-note" data-i18n="kaspi.24note">₸ в месяц · 24 платежа</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wa-card" id="wa-card" style="display:none">
+      <div class="wa-label" data-i18n="wa.lbl">Отправить клиенту в WhatsApp</div>
+      <div class="wa-row">
+        <input class="wa-input" id="wa-phone" type="tel" placeholder="+7 777 123 45 67">
+        <button class="wa-btn" onclick="generatePDF()">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.07 6.07l.9-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span data-i18n="wa.btn">Отправить прайс</span>
+        </button>
+      </div>
+      <div class="wa-hint" data-i18n="wa.hint">PDF скачается автоматически · откроется WhatsApp с кратким сообщением</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let lang = 'ru';
+const TR = {
+  ru: {
+    'header.badge':'Атырау · Актобе', 'form.title':'Подберите абонемент',
+    'lbl.grade':'Класс', 'lbl.period':'Период обучения', 'lbl.discounts':'Скидки',
+    'disc.stream.chip':'⚡ Действующий поток (−20%)', 'disc.benefit.chip':'📄 Льгота (−10%)',
+    'disc.result.chip':'👨‍👩‍👧‍👦 2 или более детей из семьи (−10%)',
+    'disc.hint':'Скидки суммируются · применяются к итоговой сумме',
+    'promo.title':'Скидка <span>−20%</span> за скорость — только <span>24 часа</span>',
+    'promo.desc':'Специальная цена действует, если решение принято в течение суток после консультации.',
+    'result.lbl':'Итог', 'result.reset':'↺ Сбросить',
+    'empty.text':'Выберите класс и период<br>для расчёта стоимости',
+    'det.lbl':'Детали', 'det.grade':'Класс', 'det.period':'Период',
+    'det.base':'Цена без скидок', 'det.disc':'Скидка', 'det.total':'Итоговая сумма', 'det.monthly':'В месяц',
+    'kaspi.hdr':'Рассрочка', 'kaspi.sub':'Без переплат · 0−0−12 и 0−0−24',
+    'kaspi.12note':'₸ в месяц · 12 платежей', 'kaspi.24note':'₸ в месяц · 24 платежа',
+    'wa.lbl':'Отправить клиенту в WhatsApp', 'wa.btn':'Отправить прайс',
+    'wa.hint':'PDF скачается автоматически · откроется WhatsApp с кратким сообщением',
+    'g.345':'3-4-5 кл', 'g.6':'6 кл', 'g.10':'10 кл', 'g.11':'11 кл',
+    'p.3m':'3 месяца', 'p.6m':'6 месяцев', 'p.9m':'9 месяцев', 'p.10m':'10 месяцев', 'p.12m':'12 месяцев',
+    'monthly.sfx':'₸ / месяц',
+    'savings':(s,r)=>`★ Экономия ${s} ₸ (−${r}%)`,
+    'disc.stream.lbl':'Действующий поток −20%', 'disc.benefit.lbl':'Льгота −10%', 'disc.result.lbl':'2 или более детей из семьи −10%',
+    'alert.phone':'Введите номер телефона клиента',
+    'wa.msg':(g,p,total,monthly)=>`Здравствуйте! Отправляю вам персональный прайс от AiPLUS.\n\n📚 ${g} · ${p}\n💰 Итого: ${total} ₸ (в месяц: ${monthly} ₸)\n\nПрайс-лист во вложении 👆`,
+    'pdf.kp':'Коммерческое предложение','pdf.det':'Детали','pdf.grade':'Класс','pdf.period':'Период',
+    'pdf.base':'Цена без скидок','pdf.disc':'Скидка','pdf.total':'Итоговая сумма','pdf.monthly':'В месяц',
+    'pdf.kaspi':'Kaspi.kz — Рассрочка','pdf.ksub':'Без переплат · 0–0–12 и 0–0–24',
+    'pdf.k12note':'в месяц · 12 платежей','pdf.k24note':'в месяц · 24 платежа',
+    'pdf.savings':(s,r)=>`★  Экономия ${s} ₸  (−${r}%)`,
+    'pdf.mval':(v)=>`${v} ₸ / месяц`,'pdf.dval':(r,s)=>`−${r}%  (−${s} ₸)`,
+    'city.badge':'🌊 Атырау · Актобе',
+  },
+  kz: {
+    'header.badge':'Атырау · Ақтөбе', 'form.title':'Абонемент таңдаңыз',
+    'lbl.grade':'Сынып', 'lbl.period':'Оқу мерзімі', 'lbl.discounts':'Жеңілдіктер',
+    'disc.stream.chip':'⚡ Ағымдағы топ (−20%)', 'disc.benefit.chip':'📄 Жеңілдік (−10%)',
+    'disc.result.chip':'👨‍👩‍👧‍👦 Бір отбасынан 2+ бала (−10%)',
+    'disc.hint':'Жеңілдіктер қосылады · жалпы сомаға қолданылады',
+    'promo.title':'Жылдамдық үшін <span>−20%</span> жеңілдік — тек <span>24 сағат</span>',
+    'promo.desc':'Кеңестен кейін бір тәулік ішінде шешім қабылданса, арнайы баға қолданылады.',
+    'result.lbl':'Нәтиже', 'result.reset':'↺ Тазалау',
+    'empty.text':'Сынып пен мерзімді<br>таңдаңыз',
+    'det.lbl':'Мәліметтер', 'det.grade':'Сынып', 'det.period':'Мерзім',
+    'det.base':'Жеңілдіксіз баға', 'det.disc':'Жеңілдік', 'det.total':'Жалпы сома', 'det.monthly':'Айына',
+    'kaspi.hdr':'Бөліп төлеу', 'kaspi.sub':'Артық төлемсіз · 0−0−12 және 0−0−24',
+    'kaspi.12note':'₸ айына · 12 төлем', 'kaspi.24note':'₸ айына · 24 төлем',
+    'wa.lbl':'Клиентке WhatsApp-та жіберу', 'wa.btn':'Прайс жіберу',
+    'wa.hint':'PDF автоматты жүктеледі · WhatsApp қысқа хабарламамен ашылады',
+    'g.345':'3-4-5 сынып', 'g.6':'6 сынып', 'g.10':'10 сынып', 'g.11':'11 сынып',
+    'p.3m':'3 ай', 'p.6m':'6 ай', 'p.9m':'9 ай', 'p.10m':'10 ай', 'p.12m':'12 ай',
+    'monthly.sfx':'₸ / ай',
+    'savings':(s,r)=>`★ Үнем ${s} ₸ (−${r}%)`,
+    'disc.stream.lbl':'Ағымдағы топ −20%', 'disc.benefit.lbl':'Жеңілдік −10%', 'disc.result.lbl':'Бір отбасынан 2+ бала −10%',
+    'alert.phone':'Клиенттің телефон нөмірін енгізіңіз',
+    'wa.msg':(g,p,total,monthly)=>`Сәлеметсіздер! AiPLUS-тан жеке прайс жіберіп отырмын.\n\n📚 ${g} · ${p}\n💰 Барлығы: ${total} ₸ (айына: ${monthly} ₸)\n\nПрайс тізімі қосымшада 👆`,
+    'pdf.kp':'Коммерциялық ұсыныс','pdf.det':'Мәліметтер','pdf.grade':'Сынып','pdf.period':'Мерзім',
+    'pdf.base':'Жеңілдіксіз баға','pdf.disc':'Жеңілдік','pdf.total':'Жалпы сома','pdf.monthly':'Айына',
+    'pdf.kaspi':'Kaspi.kz — Бөліп төлеу','pdf.ksub':'Артық төлемсіз · 0–0–12 және 0–0–24',
+    'pdf.k12note':'айына · 12 төлем','pdf.k24note':'айына · 24 төлем',
+    'pdf.savings':(s,r)=>`★  Үнем ${s} ₸  (−${r}%)`,
+    'pdf.mval':(v)=>`${v} ₸ / ай`,'pdf.dval':(r,s)=>`−${r}%  (−${s} ₸)`,
+    'city.badge':'🌊 Атырау · Ақтөбе',
+  }
+};
+function t(key,...args){ const v=TR[lang][key]; return typeof v==='function'?v(...args):(v??key); }
+
+const GRADES = {
+  '345':{ labelKey:'g.345', periods:[
+    { labelKey:'p.3m',  total:439000,  monthly:146333 },
+    { labelKey:'p.6m',  total:820100,  monthly:136683 },
+    { labelKey:'p.9m',  total:1141700, monthly:126856 },
+    { labelKey:'p.12m', total:1400700, monthly:116725 },
+  ]},
+  '6':{ labelKey:'g.6', periods:[
+    { labelKey:'p.3m', total:466200,  monthly:155400 },
+    { labelKey:'p.6m', total:820100,  monthly:136683 },
+    { labelKey:'p.9m', total:1230200, monthly:136689 },
+  ]},
+  '10':{ labelKey:'g.10', periods:[
+    { labelKey:'p.3m',  total:461100,  monthly:153700 },
+    { labelKey:'p.6m',  total:921900,  monthly:153650 },
+    { labelKey:'p.9m',  total:1318700, monthly:146522 },
+    { labelKey:'p.12m', total:1573900, monthly:131158 },
+  ]},
+  '11':{ labelKey:'g.11', periods:[
+    { labelKey:'p.3m',  total:498600,  monthly:166200 },
+    { labelKey:'p.6m',  total:997100,  monthly:166183 },
+    { labelKey:'p.9m',  total:1318700, monthly:146522 },
+    { labelKey:'p.10m', total:1344200, monthly:134420 },
+  ]},
+};
+const DISCOUNTS = {
+  stream: { labelKey:'disc.stream.lbl', rate:0.20 },
+  benefit:{ labelKey:'disc.benefit.lbl',rate:0.10 },
+  result: { labelKey:'disc.result.lbl', rate:0.10 },
+};
+let state = { grade:null, period:null, discounts:new Set() };
+function fmt(n){ return Math.round(n).toLocaleString('ru-RU').replace(/ /g,' '); }
+
+function selectGrade(btn){
+  state.grade=btn.dataset.grade; state.period=null;
+  document.querySelectorAll('#chips-grade .chip').forEach(c=>c.classList.remove('active-primary'));
+  btn.classList.add('active-primary');
+  renderPeriods();
+  document.getElementById('section-period').style.display='';
+  document.getElementById('section-discounts').style.display='';
+  render();
+}
+function selectPeriod(btn){
+  state.period=parseInt(btn.dataset.idx);
+  document.querySelectorAll('#chips-period .chip').forEach(c=>c.classList.remove('active-primary'));
+  btn.classList.add('active-primary');
+  render();
+}
+function toggleDiscount(cb){
+  if(cb.checked) state.discounts.add(cb.dataset.discount);
+  else state.discounts.delete(cb.dataset.discount);
+  render();
+}
+function resetAll(){
+  state={grade:null,period:null,discounts:new Set()};
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active-primary'));
+  document.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
+  document.getElementById('section-period').style.display='none';
+  document.getElementById('section-discounts').style.display='none';
+  document.getElementById('chips-period').innerHTML='';
+  render();
+}
+function renderPeriods(){
+  const g=GRADES[state.grade];
+  const container=document.getElementById('chips-period');
+  container.innerHTML='';
+  g.periods.forEach((p,i)=>{
+    const btn=document.createElement('button');
+    btn.className='chip'; btn.dataset.idx=i;
+    btn.textContent=t(p.labelKey);
+    btn.onclick=()=>selectPeriod(btn);
+    container.appendChild(btn);
+  });
+  const hint=document.getElementById('period-hint');
+  hint.style.display='none';
+}
+function render(){
+  const show=state.grade!==null && state.period!==null;
+  document.getElementById('empty-state').style.display   =show?'none':'';
+  document.getElementById('result-content').style.display=show?'':'none';
+  document.getElementById('details-card').style.display  =show?'':'none';
+  document.getElementById('kaspi-card').style.display    =show?'':'none';
+  if(!show){ document.getElementById('wa-card').style.display='none'; return; }
+
+  const g=GRADES[state.grade]; const p=g.periods[state.period];
+  const pLabel=t(p.labelKey); const gLabel=t(g.labelKey);
+  let dr=0; state.discounts.forEach(id=>{dr+=DISCOUNTS[id].rate;}); dr=Math.min(dr,0.40);
+  const ft=Math.round(p.total*(1-dr)); const fm=Math.round(p.monthly*(1-dr));
+  const sv=p.total-ft; const hd=dr>0;
+
+  document.getElementById('price-subtitle').textContent=gLabel+' · '+pLabel;
+  document.getElementById('price-final').textContent=fmt(ft)+' ₸';
+  const oe=document.getElementById('price-original');
+  oe.style.display=hd?'':'none'; if(hd)oe.textContent=fmt(p.total)+' ₸';
+  document.getElementById('price-monthly').textContent=fmt(fm)+' '+t('monthly.sfx');
+  const badge=document.getElementById('savings-badge');
+  badge.style.display=hd?'':'none';
+  if(hd) badge.textContent=t('savings',fmt(sv),Math.round(dr*100));
+  const pills=document.getElementById('applied-discounts'); pills.innerHTML='';
+  state.discounts.forEach(id=>{ const el=document.createElement('span'); el.className='applied-pill'; el.textContent=t(DISCOUNTS[id].labelKey); pills.appendChild(el); });
+  document.getElementById('d-grade').textContent=gLabel;
+  document.getElementById('d-period').textContent=pLabel;
+  document.getElementById('d-base').textContent=fmt(p.total)+' ₸';
+  const dr_row=document.getElementById('d-discount-row');
+  if(hd){ dr_row.style.display=''; document.getElementById('d-discount').textContent='−'+Math.round(dr*100)+'% (−'+fmt(sv)+' ₸)'; }
+  else dr_row.style.display='none';
+  document.getElementById('d-total').textContent=fmt(ft)+' ₸';
+  document.getElementById('d-monthly').textContent=fmt(fm)+' ₸';
+  document.getElementById('kaspi-12').textContent=fmt(Math.round(ft/12));
+  document.getElementById('kaspi-24').textContent=fmt(Math.round(ft/24));
+  document.getElementById('wa-card').style.display='';
+}
+function generatePDF(){
+  if(state.grade===null||state.period===null)return;
+  const rawPhone=document.getElementById('wa-phone').value.replace(/\D/g,'');
+  if(rawPhone.length<10){alert(t('alert.phone'));return;}
+  const phone=rawPhone.startsWith('8')?'7'+rawPhone.slice(1):rawPhone;
+  const g=GRADES[state.grade]; const p=g.periods[state.period];
+  const pLabel=t(p.labelKey); const gLabel=t(g.labelKey);
+  let dr=0; state.discounts.forEach(id=>{dr+=DISCOUNTS[id].rate;}); dr=Math.min(dr,0.40);
+  const ft=Math.round(p.total*(1-dr)); const fm=Math.round(p.monthly*(1-dr));
+  const sv=p.total-ft; const hd=dr>0;
+  const tpl=document.getElementById('pdf-tpl');
+  tpl.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
+  tpl.querySelector('.ptpl-grade').textContent=`${gLabel} · ${pLabel}`;
+  tpl.querySelector('.ptpl-price').textContent=fmt(ft)+' ₸';
+  const oe=tpl.querySelector('.ptpl-original'); oe.textContent=hd?fmt(p.total)+' ₸':''; oe.style.display=hd?'':'none';
+  tpl.querySelector('.ptpl-monthly').textContent=t('pdf.mval',fmt(fm));
+  const b=tpl.querySelector('.ptpl-badge'); b.style.display=hd?'':'none'; b.textContent=hd?t('pdf.savings',fmt(sv),Math.round(dr*100)):'';
+  tpl.querySelector('.ptpl-d-grade').textContent=gLabel; tpl.querySelector('.ptpl-d-period').textContent=pLabel;
+  tpl.querySelector('.ptpl-d-base').textContent=fmt(p.total)+' ₸';
+  const dr_row=tpl.querySelector('.ptpl-d-disc-row'); dr_row.style.display=hd?'':'none';
+  tpl.querySelector('.ptpl-d-disc').textContent=t('pdf.dval',Math.round(dr*100),fmt(sv));
+  tpl.querySelector('.ptpl-d-total').textContent=fmt(ft)+' ₸'; tpl.querySelector('.ptpl-d-monthly').textContent=fmt(fm)+' ₸';
+  tpl.querySelector('.ptpl-k12').textContent=fmt(Math.round(ft/12))+' ₸'; tpl.querySelector('.ptpl-k24').textContent=fmt(Math.round(ft/24))+' ₸';
+  const pe=tpl.querySelector('.ptpl-pills'); pe.innerHTML='';
+  if(hd) state.discounts.forEach(id=>{ const s=document.createElement('span'); s.className='ptpl-pill'; s.textContent=t(DISCOUNTS[id].labelKey); pe.appendChild(s); });
+  tpl.style.display='block'; tpl.style.position='fixed'; tpl.style.left='-9999px'; tpl.style.visibility='visible';
+  html2canvas(tpl,{scale:2,useCORS:true,backgroundColor:'#ffffff'}).then(canvas=>{
+    tpl.style.display='none';
+    const {jsPDF}=window.jspdf; const W=canvas.width/2,H=canvas.height/2;
+    const doc=new jsPDF({orientation:'portrait',unit:'px',format:[W,H]});
+    doc.addImage(canvas.toDataURL('image/png'),'PNG',0,0,W,H);
+    doc.save(`AiPLUS_${gLabel.replace(/\s/g,'_')}_${pLabel.replace(/\s/g,'_')}.pdf`);
+    setTimeout(()=>{ const msg=t('wa.msg',gLabel,pLabel,fmt(ft),fmt(fm)); window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`,'_blank'); },600);
+  });
+}
+function applyLang(newLang){
+  lang=newLang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>el.innerHTML=t(el.dataset.i18nHtml));
+  document.getElementById('city-badge').textContent=t('city.badge');
+  document.querySelectorAll('#chips-grade .chip').forEach(btn=>btn.textContent=t('g.'+btn.dataset.grade));
+  if(state.grade){ const sp=state.period; renderPeriods(); if(sp!==null){ const b=document.querySelector(`#chips-period [data-idx="${sp}"]`); if(b)b.classList.add('active-primary'); state.period=sp; } }
+  render();
+}
+render();
+</script>
+
+<div id="pdf-tpl" style="display:none;width:680px;font-family:'Inter',system-ui,sans-serif;background:#fff;padding:0;">
+  <div style="background:#0b2340;padding:28px 36px 24px;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-size:26px;font-weight:900;color:#fff;letter-spacing:-1px;">AiPLUS</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;">Атырау · Актобе</div>
+    </div>
+    <div data-i18n="pdf.kp" style="font-size:10px;font-weight:700;color:#64B5F6;letter-spacing:0.1em;text-transform:uppercase;">Коммерческое предложение</div>
+  </div>
+  <div style="padding:32px 36px 24px;">
+    <div class="ptpl-grade" style="font-size:14px;color:#9a9793;font-weight:500;margin-bottom:10px;"></div>
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px;">
+      <div class="ptpl-price" style="font-size:48px;font-weight:900;color:#111;letter-spacing:-2px;line-height:1;"></div>
+      <div class="ptpl-original" style="font-size:22px;color:#c0bdb9;text-decoration:line-through;font-weight:500;"></div>
+    </div>
+    <div class="ptpl-monthly" style="font-size:15px;color:#5a5855;margin-bottom:16px;font-weight:500;"></div>
+    <div class="ptpl-badge" style="display:inline-block;background:#2196F3;color:#fff;font-size:13px;font-weight:700;padding:7px 18px;border-radius:999px;margin-bottom:10px;"></div>
+    <div class="ptpl-pills" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+  </div>
+  <div style="height:1px;background:#e8e6df;margin:0 36px;"></div>
+  <div style="padding:24px 36px;">
+    <div data-i18n="pdf.det" style="font-size:10px;font-weight:700;color:#9a9793;letter-spacing:0.09em;text-transform:uppercase;margin-bottom:14px;">Детали</div>
+    <table style="width:100%;border-collapse:collapse;">
+      <tr style="border-bottom:1px solid #f5f4f1;"><td data-i18n="pdf.grade" style="padding:10px 0;font-size:14px;color:#5a5855;width:50%;">Класс</td><td class="ptpl-d-grade" style="padding:10px 0;font-size:14px;font-weight:600;text-align:right;"></td></tr>
+      <tr style="border-bottom:1px solid #f5f4f1;"><td data-i18n="pdf.period" style="padding:10px 0;font-size:14px;color:#5a5855;">Период</td><td class="ptpl-d-period" style="padding:10px 0;font-size:14px;font-weight:600;text-align:right;"></td></tr>
+      <tr style="border-bottom:1px solid #f5f4f1;"><td data-i18n="pdf.base" style="padding:10px 0;font-size:14px;color:#5a5855;">Цена без скидок</td><td class="ptpl-d-base" style="padding:10px 0;font-size:14px;font-weight:600;text-align:right;"></td></tr>
+      <tr class="ptpl-d-disc-row" style="border-bottom:1px solid #f5f4f1;"><td data-i18n="pdf.disc" style="padding:10px 0;font-size:14px;color:#d97600;">Скидка</td><td class="ptpl-d-disc" style="padding:10px 0;font-size:14px;font-weight:600;text-align:right;color:#d97600;"></td></tr>
+      <tr style="border-bottom:1px solid #f5f4f1;"><td data-i18n="pdf.total" style="padding:10px 0;font-size:15px;color:#2196F3;font-weight:700;">Итоговая сумма</td><td class="ptpl-d-total" style="padding:10px 0;font-size:16px;font-weight:800;text-align:right;color:#2196F3;"></td></tr>
+      <tr><td data-i18n="pdf.monthly" style="padding:10px 0;font-size:14px;color:#5a5855;">В месяц</td><td class="ptpl-d-monthly" style="padding:10px 0;font-size:14px;font-weight:600;text-align:right;"></td></tr>
+    </table>
+  </div>
+  <div style="margin:0 36px 36px;background:#fff4f4;border:1px solid #fcc;border-radius:14px;padding:20px 24px;">
+    <div data-i18n="pdf.kaspi" style="font-size:15px;font-weight:800;color:#e63030;margin-bottom:4px;">Kaspi.kz — Рассрочка</div>
+    <div data-i18n="pdf.ksub" style="font-size:12px;color:#f87171;margin-bottom:16px;">Без переплат · 0–0–12 и 0–0–24</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="background:#fff;border:1px solid #fcc;border-radius:10px;padding:14px 16px;">
+        <div style="font-size:11px;font-weight:700;color:#e63030;margin-bottom:4px;">0 – 0 – 12</div>
+        <div class="ptpl-k12" style="font-size:22px;font-weight:900;color:#111;"></div>
+        <div data-i18n="pdf.k12note" style="font-size:11px;color:#5a5855;margin-top:4px;">в месяц · 12 платежей</div>
+      </div>
+      <div style="background:#fff;border:1px solid #fcc;border-radius:10px;padding:14px 16px;">
+        <div style="font-size:11px;font-weight:700;color:#e63030;margin-bottom:4px;">0 – 0 – 24</div>
+        <div class="ptpl-k24" style="font-size:22px;font-weight:900;color:#111;"></div>
+        <div data-i18n="pdf.k24note" style="font-size:11px;color:#5a5855;margin-top:4px;">в месяц · 24 платежа</div>
+      </div>
+    </div>
+  </div>
+  <div style="background:#0b2340;padding:16px 36px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-size:12px;color:rgba(255,255,255,0.35);">mektep.aiplus.kz</div>
+    <div style="font-size:12px;color:#64B5F6;font-weight:700;">AiPLUS © 2026</div>
+  </div>
+</div>
+</body>
+</html>
