@@ -317,7 +317,10 @@ const GRADES={
     {labelKey:'p.3m',total:476100,monthly:158700},{labelKey:'p.6m',total:952200,monthly:158700},
     {labelKey:'p.9m',total:1341900,monthly:149100},{labelKey:'p.12m',total:1646064,monthly:137172},
   ]},
-  '6':{labelKey:'g.6',periods:[
+  '6':{labelKey:'g.6',customTiers:[
+    {min:3,max:3,monthly:178000},{min:4,max:9,monthly:149100},
+    {min:10,max:Infinity,monthly:137172},
+  ],periods:[
     {labelKey:'p.3m',total:534000,monthly:178000},{labelKey:'p.6m',total:894600,monthly:149100},
     {labelKey:'p.9m',total:1341900,monthly:149100},{labelKey:'p.12m',total:1646064,monthly:137172},
   ]},
@@ -328,7 +331,10 @@ const GRADES={
     {labelKey:'p.3m',total:490500,monthly:163500},{labelKey:'p.6m',total:981000,monthly:163500},
     {labelKey:'p.9m',total:1385100,monthly:153900},{labelKey:'p.12m',total:1593072,monthly:132756},
   ]},
-  '1112':{labelKey:'g.1112',periods:[
+  '1112':{labelKey:'g.1112',customTiers:[
+    {min:3,max:3,monthly:187600},{min:4,max:9,monthly:158700},
+    {min:10,max:Infinity,monthly:146004},
+  ],periods:[
     {labelKey:'p.3m',total:562800,monthly:187600},{labelKey:'p.6m',total:952200,monthly:158700},
     {labelKey:'p.9m',total:1428300,monthly:158700},{labelKey:'p.12m',total:1752048,monthly:146004},
   ]},
