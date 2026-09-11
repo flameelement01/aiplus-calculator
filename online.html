@@ -35,6 +35,21 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .lang-btn:hover:not(.active){color:rgba(255,255,255,0.85);}
 .page{max-width:1080px;margin:0 auto;padding:28px 20px 56px;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
 @media(max-width:720px){.page{grid-template-columns:1fr;}.col-right{order:-1;}}
+@media(max-width:520px){
+  .city-badge{display:none;}
+  .header{padding:0 12px;}
+  .logo-text{font-size:14px;}
+  .page{padding:14px 12px 80px;}
+  .card{padding:16px 14px;}
+  .form-title{font-size:18px;margin-bottom:18px;}
+  .price-final{font-size:36px;letter-spacing:-1.5px;}
+  .kaspi-grid{grid-template-columns:1fr;}
+  .wa-row{flex-direction:column;}
+  .wa-input,.wa-btn{width:100%;box-sizing:border-box;}
+  .wa-btn{justify-content:center;}
+  .chip{font-size:13px;padding:0 14px;}
+  .promo-banner{padding:14px 16px;}
+}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;}
 .card+.card{margin-top:12px;}
 .section-label{font-size:11px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
