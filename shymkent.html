@@ -1084,7 +1084,7 @@ function selectCustomPeriod(btn) {
 }
 
 function onCustomMonthsChange(input) {
-  const v = parseInt(input.value);
+  const v = parseFloat(input.value);
   if (!isNaN(v) && v >= 3) {
     state.customMonths = v;
     render();
