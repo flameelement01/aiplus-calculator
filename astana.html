@@ -265,7 +265,7 @@ const TR={
     'kaspi.hdr':'Рассрочка','kaspi.sub':'Без переплат · 0−0−12 и 0−0−24','kaspi.12note':'₸ в месяц · 12 платежей','kaspi.24note':'₸ в месяц · 24 платежа',
     'wa.lbl':'Отправить клиенту в WhatsApp','wa.btn':'Отправить прайс','wa.hint':'PDF скачается автоматически · откроется WhatsApp с кратким сообщением',
     'g.039':'0–3 / 7–9 кл','g.45':'4–5 кл','g.6':'6 кл','g.10':'10 кл','g.1112':'11–12 кл',
-    'p.3m':'3 месяца','p.6m':'6 месяцев','p.9m':'9 месяцев','p.12m':'12 месяцев',
+    'p.3m':'3 месяца','p.6m':'6 месяцев','p.55m':'5,5 месяца','p.9m':'9 месяцев','p.85m':'8,5 месяца','p.12m':'12 месяцев',
     'p.custom':'✏️ Свой срок','custom.months':'месяцев обучения','custom.min':'минимум 3 месяца',
     'custom.lbl':(m)=>`${m} мес`,'custom.lbl.pdf':(m)=>`${m} месяцев`,
     'monthly.sfx':'₸ / месяц','savings':(s,r)=>`★ Экономия ${s} ₸ (−${r}%)`,
@@ -287,7 +287,7 @@ const TR={
     'kaspi.hdr':'Бөліп төлеу','kaspi.sub':'Артық төлемсіз · 0−0−12 және 0−0−24','kaspi.12note':'₸ айына · 12 төлем','kaspi.24note':'₸ айына · 24 төлем',
     'wa.lbl':'Клиентке WhatsApp-та жіберу','wa.btn':'Прайс жіберу','wa.hint':'PDF автоматты жүктеледі · WhatsApp қысқа хабарламамен ашылады',
     'g.039':'0–3 / 7–9 сынып','g.45':'4–5 сынып','g.6':'6 сынып','g.10':'10 сынып','g.1112':'11–12 сынып',
-    'p.3m':'3 ай','p.6m':'6 ай','p.9m':'9 ай','p.12m':'12 ай',
+    'p.3m':'3 ай','p.6m':'6 ай','p.55m':'5,5 ай','p.9m':'9 ай','p.85m':'8,5 ай','p.12m':'12 ай',
     'p.custom':'✏️ Өз мерзімім','custom.months':'оқу айы','custom.min':'минимум 3 ай',
     'custom.lbl':(m)=>`${m} ай`,'custom.lbl.pdf':(m)=>`${m} ай`,
     'monthly.sfx':'₸ / ай','savings':(s,r)=>`★ Үнем ${s} ₸ (−${r}%)`,
@@ -321,7 +321,7 @@ const GRADES={
     {min:3,max:3,monthly:178000},{min:4,max:9,monthly:149100},
     {min:10,max:Infinity,monthly:137172},
   ],periods:[
-    {labelKey:'p.3m',total:534000,monthly:178000},{labelKey:'p.6m',total:894600,monthly:149100},
+    {labelKey:'p.3m',total:534000,monthly:178000},{labelKey:'p.55m',total:820000,monthly:149100},
     {labelKey:'p.9m',total:1341900,monthly:149100},{labelKey:'p.12m',total:1646064,monthly:137172},
   ]},
   '10':{labelKey:'g.10',customTiers:[
@@ -336,7 +336,7 @@ const GRADES={
     {min:10,max:Infinity,monthly:146004},
   ],periods:[
     {labelKey:'p.3m',total:562800,monthly:187600},{labelKey:'p.6m',total:952200,monthly:158700},
-    {labelKey:'p.9m',total:1428300,monthly:158700},{labelKey:'p.12m',total:1752048,monthly:146004},
+    {labelKey:'p.85m',total:1349000,monthly:158700},{labelKey:'p.12m',total:1752048,monthly:146004},
   ]},
 };
 const DISCOUNTS={stream:{labelKey:'disc.stream.lbl',rate:0.20},benefit:{labelKey:'disc.benefit.lbl',rate:0.10},result:{labelKey:'disc.result.lbl',rate:0.10}};
