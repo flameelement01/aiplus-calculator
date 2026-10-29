@@ -861,13 +861,15 @@ const TR = {
     'g.11':   '11 кл',
     'hint.6': '5,5 мес — до конца учебного года (НИШ) · 7 мес — полный курс для 3 школ',
     'p.6m':   '6 месяцев',
+    'p.5m':   '5 месяцев',
+    'p.65m':  '6,5 месяцев',
     'p.6nis': '5,5 мес · НИШ',
     'p.75f':  '7 мес · Полный курс (3 школы)',
     'p.9m':   '9 месяцев',
     'p.85m':  '8,5 месяца',
     'p.12m':  '12 месяцев',
     'p.7nis': '6,5 мес · НИШ',
-    'p.8m':   '8 мес · Полный курс (3 школы)',
+    'p.8m':   '8 месяцев',
     'p.95m':  '9,5 месяца',
     'p.custom':       '✏️ Свой срок',
     'custom.months':  'месяцев обучения',
@@ -937,13 +939,15 @@ const TR = {
     'g.11':   '11 сынып',
     'hint.6': '5,5 ай — оқу жылының соңына дейін (НЗМ) · 7 ай — 3 мектеп толық курс',
     'p.6m':   '6 ай',
+    'p.5m':   '5 ай',
+    'p.65m':  '6,5 ай',
     'p.6nis': '5,5 ай · НЗМ',
     'p.75f':  '7 ай · Толық курс (3 мектеп)',
     'p.9m':   '9 ай',
     'p.85m':  '8,5 ай',
     'p.12m':  '12 ай',
     'p.7nis': '6,5 ай · НЗМ',
-    'p.8m':   '8 ай · Толық курс (3 мектеп)',
+    'p.8m':   '8 ай',
     'p.95m':  '9,5 ай',
     'p.custom':       '✏️ Өз мерзімім',
     'custom.months':  'оқу айы',
@@ -1010,10 +1014,15 @@ const GRADES = {
   },
   '6': {
     labelKey: 'g.6',
-    hintKey: 'hint.6',
     periods: [
-      { labelKey: 'p.6nis', total: 751000,  monthly: 136599 },
-      { labelKey: 'p.75f',  total: 956000,  monthly: 136599, wide: true },
+      { labelKey: 'p.5m',  total: 682995, monthly: 136599 },
+      { labelKey: 'p.65m', total: 825364, monthly: 126979 },
+    ],
+    customTiers: [
+      { min: 1, max: 3,        monthly: 146333 },
+      { min: 4, max: 6,        monthly: 136599 },
+      { min: 7, max: 9,        monthly: 126979 },
+      { min: 10, max: Infinity, monthly: 116821 },
     ]
   },
   '10': {
@@ -1033,8 +1042,14 @@ const GRADES = {
   '11': {
     labelKey: 'g.11',
     periods: [
-      { labelKey: 'p.6m',  total: 993000,  monthly: 165457 },
-      { labelKey: 'p.85m', total: 1243000, monthly: 146218 },
+      { labelKey: 'p.5m', total: 827285,  monthly: 165457 },
+      { labelKey: 'p.8m', total: 1169744, monthly: 146218 },
+    ],
+    customTiers: [
+      { min: 1, max: 3,        monthly: 165457 },
+      { min: 4, max: 6,        monthly: 165457 },
+      { min: 7, max: 9,        monthly: 146218 },
+      { min: 10, max: Infinity, monthly: 134521 },
     ]
   },
 };
