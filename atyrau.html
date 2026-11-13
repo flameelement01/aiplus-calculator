@@ -133,6 +133,19 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 .custom-months-input::-webkit-inner-spin-button,.custom-months-input::-webkit-outer-spin-button{opacity:0.4;}
 .custom-months-label{font-size:14px;color:var(--text2);font-weight:600;margin-bottom:3px;}
 .custom-tier-info{font-size:12px;color:var(--city-color);font-weight:600;}
+.date-calc-row{display:flex;align-items:center;gap:8px;margin-top:10px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1.5px dashed rgba(255,255,255,0.12);border-radius:12px;flex-wrap:wrap;}
+.date-calc-title{font-size:11px;font-weight:700;color:var(--text2);letter-spacing:0.06em;text-transform:uppercase;width:100%;margin-bottom:4px;}
+.date-input{flex:1;min-width:128px;height:40px;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;color:var(--text);background:rgba(255,255,255,0.06);outline:none;padding:0 10px;cursor:pointer;color-scheme:dark;}
+.date-input:focus{border-color:var(--city-color);background:rgba(255,255,255,0.1);}
+.date-sep{font-size:16px;color:var(--text2);font-weight:700;flex-shrink:0;}
+.date-calc-result{font-size:15px;font-weight:800;color:var(--city-color);min-width:60px;text-align:right;flex-shrink:0;}
+.reminder-card{background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:16px 18px;margin-top:10px;}
+.reminder-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;}
+.reminder-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,0.06);}
+.reminder-icon{font-size:17px;flex-shrink:0;line-height:1.5;}
+.reminder-item-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.reminder-item-desc{font-size:12px;color:var(--text2);line-height:1.5;}
+.reminder-freeze-days{color:var(--city-color);font-weight:800;}
 </style>
 </head>
 <body>
@@ -302,6 +315,12 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
       </div>
       <div class="wa-hint" data-i18n="wa.hint">PDF скачается автоматически · откроется WhatsApp с кратким сообщением</div>
     </div>
+    <div class="reminder-card" id="reminder-card" style="display:none">
+      <div class="reminder-title" data-i18n="reminder.title">📋 Напомните клиенту</div>
+      <div class="reminder-item"><div class="reminder-icon">❄️</div><div><div class="reminder-item-title" data-i18n="freeze.title">Заморозка обучения</div><div class="reminder-item-desc" id="freeze-desc"></div></div></div>
+      <div class="reminder-item"><div class="reminder-icon">🔄</div><div><div class="reminder-item-title" data-i18n="transfer.title">Перевод обучения</div><div class="reminder-item-desc" data-i18n="transfer.desc"></div></div></div>
+      <div class="reminder-item"><div class="reminder-icon">↩️</div><div><div class="reminder-item-title" data-i18n="refund.title">Возврат средств</div><div class="reminder-item-desc" data-i18n="refund.desc"></div></div></div>
+    </div>
   </div>
 </div>
 
@@ -328,7 +347,12 @@ const TR = {
     'p.3m':'3 месяца', 'p.6m':'6 месяцев', 'p.9m':'9 месяцев', 'p.85m':'8,5 месяца', 'p.10m':'10 месяцев', 'p.12m':'12 месяцев',
     'p.45m':'4,5 месяца', 'p.5m':'5 месяцев', 'p.65m':'6,5 месяцев', 'p.75m':'7,5 месяца', 'p.8m':'8 месяцев',
     'p.6nis':'5,5 мес · НИШ', 'p.75f':'7 мес · Полный курс', 'p.85f':'8,5 мес · Полный курс',
-    'p.custom':'✏️ Свой срок', 'custom.months':'месяцев обучения', 'custom.min':'минимум 3 месяца',
+    'p.custom':'✏️ Свой срок', 'custom.months':'месяцев обучения', 'custom.min':'минимум 3 месяца', 'date.calc.title':'По датам обучения',
+    'reminder.title':'📋 Напомните клиенту','freeze.title':'Заморозка обучения',
+    'freeze.has':(m,d)=>`При сроке ${m} мес — <span class="reminder-freeze-days">${d} дней</span> заморозки`,
+    'freeze.none':(m)=>`При сроке ${m} мес — заморозка не предусмотрена`,
+    'transfer.title':'Перевод обучения','transfer.desc':'По письменному заявлению в офис. Перевод в другую группу или филиал.',
+    'refund.title':'Возврат средств','refund.desc':'За неиспользованные дни: Б − (О ÷ 30 × Ф). Уведомление — письменно в офис.',
     'custom.lbl':(m)=>`${m} мес`, 'custom.lbl.pdf':(m)=>`${m} месяцев`,
     'monthly.sfx':'₸ / месяц',
     'savings':(s,r)=>`★ Экономия ${s} ₸ (−${r}%)`,
@@ -363,7 +387,12 @@ const TR = {
     'p.3m':'3 ай', 'p.6m':'6 ай', 'p.9m':'9 ай', 'p.85m':'8,5 ай', 'p.10m':'10 ай', 'p.12m':'12 ай',
     'p.45m':'4,5 ай', 'p.5m':'5 ай', 'p.65m':'6,5 ай', 'p.75m':'7,5 ай', 'p.8m':'8 ай',
     'p.6nis':'5,5 ай · НИШ', 'p.75f':'7 ай · Толық курс', 'p.85f':'8,5 ай · Толық курс',
-    'p.custom':'✏️ Өз мерзімім', 'custom.months':'оқу айы', 'custom.min':'минимум 3 ай',
+    'p.custom':'✏️ Өз мерзімім', 'custom.months':'оқу айы', 'custom.min':'минимум 3 ай', 'date.calc.title':'Күндер бойынша есептеу',
+    'reminder.title':'📋 Клиентке еске салыңыз','freeze.title':'Оқуды тоқтата тұру',
+    'freeze.has':(m,d)=>`${m} ай мерзімінде — <span class="reminder-freeze-days">${d} күн</span> тоқтата тұру`,
+    'freeze.none':(m)=>`${m} ай мерзімінде — тоқтата тұру қарастырылмаған`,
+    'transfer.title':'Оқуды ауыстыру','transfer.desc':'Жазбаша өтініш бойынша. Басқа топқа немесе филиалға ауысу.',
+    'refund.title':'Қайтарым','refund.desc':'Пайдаланылмаған күндер: Б − (О ÷ 30 × Ф). Хабарлама — кеңсеге жазбаша.',
     'custom.lbl':(m)=>`${m} ай`, 'custom.lbl.pdf':(m)=>`${m} ай`,
     'monthly.sfx':'₸ / ай',
     'savings':(s,r)=>`★ Үнем ${s} ₸ (−${r}%)`,
@@ -447,7 +476,18 @@ function selectCustomPeriod(btn){
 }
 function onCustomMonthsChange(input){
   const v=parseFloat(input.value);
-  if(!isNaN(v)&&v>=3){ state.customMonths=v; render(); } else { state.customMonths=null; render(); }
+  if(!isNaN(v)&&v>=1){ state.customMonths=v; render(); } else { state.customMonths=null; render(); }
+}
+function onDateRangeChange(){
+  const s=document.getElementById('date-start'),e=document.getElementById('date-end');
+  if(!s||!e||!s.value||!e.value) return;
+  const d1=new Date(s.value),d2=new Date(e.value);
+  if(d2<=d1) return;
+  const months=Math.round((d2-d1)/86400000/30*2)/2;
+  const res=document.getElementById('date-calc-result');
+  if(res) res.textContent=months+' мес';
+  const cb=document.querySelector('#chips-period [data-idx="custom"]');
+  if(cb){ selectCustomPeriod(cb); const inp=document.getElementById('custom-months-input'); if(inp){inp.value=months;onCustomMonthsChange(inp);} }
 }
 function toggleDiscount(cb){
   if(cb.checked) state.discounts.add(cb.dataset.discount);
@@ -482,8 +522,9 @@ function renderPeriods(){
     container.appendChild(btn);
     const row=document.createElement('div');
     row.id='custom-months-row'; row.style.display='none'; row.className='custom-months-row';
-    row.innerHTML=`<input id="custom-months-input" class="custom-months-input" type="number" min="3" max="36" step="0.5" placeholder="3" oninput="onCustomMonthsChange(this)"><div><div class="custom-months-label">${t('custom.months')}</div><div class="custom-tier-info" id="custom-tier-info">${t('custom.min')}</div></div>`;
+    row.innerHTML=`<input id="custom-months-input" class="custom-months-input" type="number" min="1" max="36" step="0.5" placeholder="1" oninput="onCustomMonthsChange(this)"><div><div class="custom-months-label">${t('custom.months')}</div><div class="custom-tier-info" id="custom-tier-info">${t('custom.min')}</div></div>`;
     container.appendChild(row);
+    const dr=document.createElement('div');dr.className='date-calc-row';dr.innerHTML=`<span class="date-calc-title">📅 ${t('date.calc.title')}</span><input type="date" id="date-start" class="date-input" oninput="onDateRangeChange()"><span class="date-sep">→</span><input type="date" id="date-end" class="date-input" oninput="onDateRangeChange()"><div id="date-calc-result" class="date-calc-result"></div>`;container.appendChild(dr);
   }
   const hint=document.getElementById('period-hint');
   hint.style.display='none';
@@ -506,7 +547,7 @@ function render(){
   document.getElementById('result-content').style.display=show?'':'none';
   document.getElementById('details-card').style.display  =show?'':'none';
   document.getElementById('kaspi-card').style.display    =show?'':'none';
-  if(!show){ document.getElementById('wa-card').style.display='none'; return; }
+  if(!show){ document.getElementById('wa-card').style.display='none'; document.getElementById('reminder-card').style.display='none'; return; }
 
   const g=GRADES[state.grade]; const {p,pLabel}=getPeriodData(); const gLabel=t(g.labelKey);
   let dr=0; state.discounts.forEach(id=>{dr+=DISCOUNTS[id].rate;}); dr=Math.min(dr,0.40);
@@ -534,6 +575,10 @@ function render(){
   document.getElementById('kaspi-12').textContent=fmt(Math.round(ft/12));
   document.getElementById('kaspi-24').textContent=fmt(Math.round(ft/24));
   document.getElementById('wa-card').style.display='';
+  const selM=state.period==='custom'?state.customMonths:Math.round(p.total/p.monthly*10)/10;
+  const fd=selM>=10?t('freeze.has',selM,60):selM>=6?t('freeze.has',selM,30):t('freeze.none',selM);
+  const fe=document.getElementById('freeze-desc'); if(fe) fe.innerHTML=fd;
+  document.getElementById('reminder-card').style.display='';
 }
 function generatePDF(){
   if(state.grade===null)return;
