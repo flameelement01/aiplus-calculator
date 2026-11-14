@@ -111,9 +111,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .date-input:focus{border-color:var(--city-color);background:rgba(255,255,255,0.1);}
 .date-sep{font-size:16px;color:var(--text2);font-weight:700;flex-shrink:0;}
 .date-calc-result{font-size:15px;font-weight:800;color:var(--city-color);min-width:60px;text-align:right;flex-shrink:0;}
-.reminder-card{background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:16px 18px;margin-top:10px;}
-.reminder-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;}
-.reminder-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,0.06);}
+.reminder-card{border-top:1px solid var(--border);padding-top:18px;margin-top:20px;}
+.reminder-title{font-size:11px;font-weight:700;color:var(--text2);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;}
+.reminder-item{display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-top:1px solid var(--border);}
 .reminder-icon{font-size:17px;flex-shrink:0;line-height:1.5;}
 .reminder-item-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
 .reminder-item-desc{font-size:12px;color:var(--text2);line-height:1.5;}
@@ -201,6 +201,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         </div>
         <div class="hint-discounts" data-i18n="disc.hint">Скидки суммируются · применяются к итоговой сумме</div>
       </div>
+      <div class="reminder-card" id="reminder-card" style="display:none">
+        <div class="reminder-title" data-i18n="reminder.title">📋 Напомните клиенту</div>
+        <div class="reminder-item"><div class="reminder-icon">❄️</div><div><div class="reminder-item-title" data-i18n="freeze.title">Заморозка</div><div class="reminder-item-desc" id="freeze-desc"></div></div></div>
+        <div class="reminder-item"><div class="reminder-icon">🔄</div><div><div class="reminder-item-title" data-i18n="transfer.title">Перевод</div><div class="reminder-item-desc" data-i18n="transfer.desc"></div></div></div>
+        <div class="reminder-item"><div class="reminder-icon">↩️</div><div><div class="reminder-item-title" data-i18n="refund.title">Возврат</div><div class="reminder-item-desc" data-i18n="refund.desc"></div></div></div>
+      </div>
     </div>
     <div class="promo-banner">
       <div class="promo-icon">⚡</div>
@@ -261,12 +267,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         </button>
       </div>
       <div class="wa-hint" data-i18n="wa.hint">PDF скачается автоматически · откроется WhatsApp с кратким сообщением</div>
-    </div>
-    <div class="reminder-card" id="reminder-card" style="display:none">
-      <div class="reminder-title" data-i18n="reminder.title">📋 Напомните клиенту</div>
-      <div class="reminder-item"><div class="reminder-icon">❄️</div><div><div class="reminder-item-title" data-i18n="freeze.title">Заморозка</div><div class="reminder-item-desc" id="freeze-desc"></div></div></div>
-      <div class="reminder-item"><div class="reminder-icon">🔄</div><div><div class="reminder-item-title" data-i18n="transfer.title">Перевод</div><div class="reminder-item-desc" data-i18n="transfer.desc"></div></div></div>
-      <div class="reminder-item"><div class="reminder-icon">↩️</div><div><div class="reminder-item-title" data-i18n="refund.title">Возврат</div><div class="reminder-item-desc" data-i18n="refund.desc"></div></div></div>
     </div>
   </div>
 </div>
@@ -361,16 +361,16 @@ const GRADES={
 const DISCOUNTS={stream:{labelKey:'disc.stream.lbl',rate:0.20},benefit:{labelKey:'disc.benefit.lbl',rate:0.10},result:{labelKey:'disc.result.lbl',rate:0.10}};
 let state={grade:null,period:null,customMonths:null,discounts:new Set()};
 function fmt(n){return Math.round(n).toLocaleString('ru-RU').replace(/ /g,' ');}
-function selectGrade(btn){state.grade=btn.dataset.grade;state.period=null;state.customMonths=null;document.querySelectorAll('#chips-grade .chip').forEach(c=>c.classList.remove('active-primary'));btn.classList.add('active-primary');renderPeriods();document.getElementById('section-period').style.display='';document.getElementById('section-discounts').style.display='';render();}
+function selectGrade(btn){state.grade=btn.dataset.grade;state.period=null;state.customMonths=null;document.querySelectorAll('#chips-grade .chip').forEach(c=>c.classList.remove('active-primary'));btn.classList.add('active-primary');renderPeriods();document.getElementById('section-period').style.display='';document.getElementById('section-discounts').style.display='';document.getElementById('reminder-card').style.display='';render();}
 function selectPeriod(btn){state.period=parseInt(btn.dataset.idx);state.customMonths=null;document.querySelectorAll('#chips-period .chip').forEach(c=>c.classList.remove('active-primary'));btn.classList.add('active-primary');const row=document.getElementById('custom-months-row');if(row)row.style.display='none';render();}
 function selectCustomPeriod(btn){state.period='custom';state.customMonths=null;document.querySelectorAll('#chips-period .chip').forEach(c=>c.classList.remove('active-primary'));btn.classList.add('active-primary');const row=document.getElementById('custom-months-row');if(row){row.style.display='';document.getElementById('custom-months-input').focus();}render();}
 function onCustomMonthsChange(input){const v=parseFloat(input.value);if(!isNaN(v)&&v>=1){state.customMonths=v;render();}else{state.customMonths=null;render();}}
 function onDateRangeChange(){const s=document.getElementById('date-start'),e=document.getElementById('date-end');if(!s||!e||!s.value||!e.value)return;const d1=new Date(s.value),d2=new Date(e.value);if(d2<=d1)return;const months=Math.round((d2-d1)/86400000/30*2)/2;const res=document.getElementById('date-calc-result');if(res)res.textContent=months+' мес';const cb=document.querySelector('#chips-period [data-idx="custom"]');if(cb){selectCustomPeriod(cb);const inp=document.getElementById('custom-months-input');if(inp){inp.value=months;onCustomMonthsChange(inp);}}}
 function toggleDiscount(cb){if(cb.checked)state.discounts.add(cb.dataset.discount);else state.discounts.delete(cb.dataset.discount);render();}
-function resetAll(){state={grade:null,period:null,customMonths:null,discounts:new Set()};document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active-primary'));document.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);document.getElementById('section-period').style.display='none';document.getElementById('section-discounts').style.display='none';document.getElementById('chips-period').innerHTML='';render();}
+function resetAll(){state={grade:null,period:null,customMonths:null,discounts:new Set()};document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active-primary'));document.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);document.getElementById('section-period').style.display='none';document.getElementById('section-discounts').style.display='none';document.getElementById('reminder-card').style.display='none';document.getElementById('chips-period').innerHTML='';render();}
 function renderPeriods(){const g=GRADES[state.grade];const c=document.getElementById('chips-period');c.innerHTML='';g.periods.forEach((p,i)=>{const b=document.createElement('button');b.className='chip';b.dataset.idx=i;b.textContent=t(p.labelKey);b.onclick=()=>selectPeriod(b);c.appendChild(b);});if(g.customTiers){const b=document.createElement('button');b.className='chip';b.dataset.idx='custom';b.textContent=t('p.custom');b.onclick=()=>selectCustomPeriod(b);c.appendChild(b);const row=document.createElement('div');row.id='custom-months-row';row.style.display='none';row.className='custom-months-row';row.innerHTML=`<input id="custom-months-input" class="custom-months-input" type="number" min="1" max="36" step="0.5" placeholder="1" oninput="onCustomMonthsChange(this)"><div><div class="custom-months-label">${t('custom.months')}</div><div class="custom-tier-info" id="custom-tier-info">${t('custom.min')}</div></div>`;c.appendChild(row);const dr=document.createElement('div');dr.className='date-calc-row';dr.innerHTML=`<span class="date-calc-title">📅 ${t('date.calc.title')}</span><input type="date" id="date-start" class="date-input" oninput="onDateRangeChange()"><span class="date-sep">→</span><input type="date" id="date-end" class="date-input" oninput="onDateRangeChange()"><div id="date-calc-result" class="date-calc-result"></div>`;c.appendChild(dr);}document.getElementById('period-hint').style.display='none';}
 function getPeriodData(){const g=GRADES[state.grade];if(state.period==='custom'){const m=state.customMonths;const tier=g.customTiers.find(ti=>m>=ti.min&&m<=ti.max);const infoEl=document.getElementById('custom-tier-info');if(infoEl&&tier)infoEl.textContent=fmt(tier.monthly)+' ₸ / мес';return{p:{total:m*tier.monthly,monthly:tier.monthly},pLabel:t('custom.lbl',m)};}const p=g.periods[state.period];return{p,pLabel:t(p.labelKey)};}
-function render(){const isCustom=state.period==='custom';const show=state.grade!==null&&((isCustom&&state.customMonths!==null)||(!isCustom&&state.period!==null));document.getElementById('empty-state').style.display=show?'none':'';document.getElementById('result-content').style.display=show?'':'none';document.getElementById('details-card').style.display=show?'':'none';document.getElementById('kaspi-card').style.display=show?'':'none';if(!show){document.getElementById('wa-card').style.display='none';document.getElementById('reminder-card').style.display='none';return;}
+function render(){const isCustom=state.period==='custom';const show=state.grade!==null&&((isCustom&&state.customMonths!==null)||(!isCustom&&state.period!==null));document.getElementById('empty-state').style.display=show?'none':'';document.getElementById('result-content').style.display=show?'':'none';document.getElementById('details-card').style.display=show?'':'none';document.getElementById('kaspi-card').style.display=show?'':'none';if(!show){document.getElementById('wa-card').style.display='none';return;}
   const g=GRADES[state.grade];const{p,pLabel}=getPeriodData();const gLabel=t(g.labelKey);
   let dr=0;state.discounts.forEach(id=>{dr+=DISCOUNTS[id].rate;});dr=Math.min(dr,0.40);
   const ft=Math.round(p.total*(1-dr));const fm=Math.round(p.monthly*(1-dr));const sv=p.total-ft;const hd=dr>0;
@@ -385,7 +385,7 @@ function render(){const isCustom=state.period==='custom';const show=state.grade!
   document.getElementById('d-total').textContent=fmt(ft)+' ₸';document.getElementById('d-monthly').textContent=fmt(fm)+' ₸';
   document.getElementById('kaspi-12').textContent=fmt(Math.round(ft/12));document.getElementById('kaspi-24').textContent=fmt(Math.round(ft/24));
   document.getElementById('wa-card').style.display='';
-  const selM=state.period==='custom'?state.customMonths:Math.round(p.total/p.monthly*10)/10;const fd=selM>=10?t('freeze.has',selM,60):selM>=6?t('freeze.has',selM,30):t('freeze.none',selM);const fe=document.getElementById('freeze-desc');if(fe)fe.innerHTML=fd;document.getElementById('reminder-card').style.display='';
+  const selM=state.period==='custom'?state.customMonths:Math.round(p.total/p.monthly*10)/10;const fd=selM>=10?t('freeze.has',selM,60):selM>=6?t('freeze.has',selM,30):t('freeze.none',selM);const fe=document.getElementById('freeze-desc');if(fe)fe.innerHTML=fd;
 }
 function generatePDF(){if(state.grade===null)return;const isCustom=state.period==='custom';if(!isCustom&&state.period===null)return;if(isCustom&&!state.customMonths)return;const rawPhone=document.getElementById('wa-phone').value.replace(/\D/g,'');if(rawPhone.length<10){alert(t('alert.phone'));return;}const phone=rawPhone.startsWith('8')?'7'+rawPhone.slice(1):rawPhone;
   const g=GRADES[state.grade];const{p,pLabel:_pl}=getPeriodData();const pLabel=isCustom?t('custom.lbl.pdf',state.customMonths):_pl;const gLabel=t(g.labelKey);

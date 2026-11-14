@@ -517,16 +517,14 @@ body {
 
 /* ── Manager reminder ────────────────────────────────────────────────────── */
 .reminder-card {
-  background: rgba(255,255,255,0.03);
-  border: 1.5px solid rgba(255,255,255,0.08);
-  border-radius: var(--radius);
-  padding: 16px 18px;
-  margin-top: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+  margin-top: 20px;
 }
 .reminder-title {
   font-size: 11px;
   font-weight: 700;
-  color: rgba(255,255,255,0.3);
+  color: var(--text2);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 12px;
@@ -535,8 +533,8 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 10px 0;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
 }
 .reminder-icon { font-size: 17px; flex-shrink: 0; line-height: 1.5; }
 .reminder-item-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
@@ -805,6 +803,30 @@ body {
         </div>
         <div class="hint-discounts" data-i18n="disc.hint">Скидки суммируются · применяются к итоговой сумме</div>
       </div>
+      <div class="reminder-card" id="reminder-card" style="display:none">
+        <div class="reminder-title" data-i18n="reminder.title">📋 Напомните клиенту</div>
+        <div class="reminder-item">
+          <div class="reminder-icon">❄️</div>
+          <div>
+            <div class="reminder-item-title" data-i18n="freeze.title">Заморозка обучения</div>
+            <div class="reminder-item-desc" id="freeze-desc"></div>
+          </div>
+        </div>
+        <div class="reminder-item">
+          <div class="reminder-icon">🔄</div>
+          <div>
+            <div class="reminder-item-title" data-i18n="transfer.title">Перевод обучения</div>
+            <div class="reminder-item-desc" data-i18n="transfer.desc"></div>
+          </div>
+        </div>
+        <div class="reminder-item">
+          <div class="reminder-icon">↩️</div>
+          <div>
+            <div class="reminder-item-title" data-i18n="refund.title">Возврат средств</div>
+            <div class="reminder-item-desc" data-i18n="refund.desc"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Promo banner -->
@@ -892,30 +914,6 @@ body {
         </button>
       </div>
       <div class="wa-hint" data-i18n="wa.hint">PDF скачается автоматически · откроется WhatsApp с кратким сообщением</div>
-    <div class="reminder-card" id="reminder-card" style="display:none">
-      <div class="reminder-title" data-i18n="reminder.title">📋 Напомните клиенту</div>
-      <div class="reminder-item">
-        <div class="reminder-icon">❄️</div>
-        <div>
-          <div class="reminder-item-title" data-i18n="freeze.title">Заморозка обучения</div>
-          <div class="reminder-item-desc" id="freeze-desc"></div>
-        </div>
-      </div>
-      <div class="reminder-item">
-        <div class="reminder-icon">🔄</div>
-        <div>
-          <div class="reminder-item-title" data-i18n="transfer.title">Перевод обучения</div>
-          <div class="reminder-item-desc" data-i18n="transfer.desc"></div>
-        </div>
-      </div>
-      <div class="reminder-item">
-        <div class="reminder-icon">↩️</div>
-        <div>
-          <div class="reminder-item-title" data-i18n="refund.title">Возврат средств</div>
-          <div class="reminder-item-desc" data-i18n="refund.desc"></div>
-        </div>
-      </div>
-    </div>
     </div>
   </div>
 </div>
@@ -1203,6 +1201,7 @@ function selectGrade(btn) {
   renderPeriods();
   document.getElementById('section-period').style.display = '';
   document.getElementById('section-discounts').style.display = '';
+  document.getElementById('reminder-card').style.display = '';
   render();
 }
 
@@ -1270,6 +1269,7 @@ function resetAll() {
   document.querySelectorAll('#chips-discounts input[type=checkbox]').forEach(cb => cb.checked = false);
   document.getElementById('section-period').style.display = 'none';
   document.getElementById('section-discounts').style.display = 'none';
+  document.getElementById('reminder-card').style.display = 'none';
   document.getElementById('chips-period').innerHTML = '';
   document.getElementById('period-hint').style.display = 'none';
   render();
@@ -1346,7 +1346,6 @@ function render() {
   document.getElementById('kaspi-card').style.display     = show ? '' : 'none';
   if (!show) {
     document.getElementById('wa-card').style.display = 'none';
-    document.getElementById('reminder-card').style.display = 'none';
     return;
   }
 
@@ -1422,7 +1421,6 @@ function render() {
              : t('freeze.none', selMonths);
     freezeEl.innerHTML = fd;
   }
-  document.getElementById('reminder-card').style.display = '';
 }
 
 function buildPDFData() {
