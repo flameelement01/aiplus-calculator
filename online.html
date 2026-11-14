@@ -220,7 +220,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <div class="reminder-title" data-i18n="reminder.title">Плюсы абонемента</div>
         <div class="reminder-item"><div class="reminder-icon">❄️</div><div><div class="reminder-item-title" data-i18n="freeze.title">Заморозка</div><div class="reminder-item-desc" id="freeze-desc"></div></div></div>
         <div class="reminder-item"><div class="reminder-icon">🔄</div><div><div class="reminder-item-title" data-i18n="transfer.title">Перевод</div><div class="reminder-item-desc" data-i18n="transfer.desc"></div></div></div>
-        <div class="reminder-item"><div class="reminder-icon">↩️</div><div><div class="reminder-item-title" data-i18n="refund.title">Возврат</div><div class="reminder-item-desc" data-i18n="refund.desc"></div></div></div>
+        <div class="reminder-item"><div class="reminder-icon">↩️</div><div><div class="reminder-item-title" data-i18n="refund.title">Возврат</div><div class="reminder-item-desc" id="refund-desc"></div></div></div>
       </div>
     </div>
     <div class="promo-banner">
@@ -300,7 +300,7 @@ const TR={
     'wa.lbl':'Отправить клиенту в WhatsApp','wa.btn':'Отправить прайс','wa.hint':'PDF скачается автоматически · откроется WhatsApp с кратким сообщением',
     'g.34':'4–5 кл','g.5':'6 кл','g.ent':'ЕНТ · 11 кл',
     'p.3m':'3 месяца','p.45m':'4,5 месяца','p.5m':'5 месяцев','p.65m':'6,5 месяцев','p.6m':'6 месяцев','p.9m':'9 месяцев','p.12m':'12 месяцев',
-    'p.custom':'✏️ Свой срок','custom.months':'месяцев обучения','custom.min':'минимум 3 месяца','date.calc.title':'По датам обучения','reminder.title':'Плюсы абонемента','freeze.title':'Заморозка обучения','freeze.has':(m,d)=>`При сроке ${m} мес — <span class="reminder-freeze-days">${d} дней</span> заморозки`,'freeze.none':(m)=>`При сроке ${m} мес — заморозка не предусмотрена`,'transfer.title':'Перевод обучения','transfer.desc':'По письменному заявлению в офис. Перевод в другую группу или филиал.','refund.title':'Возврат средств','refund.desc':'За неиспользованные дни: Б − (О ÷ 30 × Ф). Уведомление — письменно в офис.',
+    'p.custom':'✏️ Свой срок','custom.months':'месяцев обучения','custom.min':'минимум 3 месяца','date.calc.title':'По датам обучения','reminder.title':'Плюсы абонемента','freeze.title':'Заморозка обучения','freeze.has':(m,d)=>`При сроке ${m} мес — <span class="reminder-freeze-days">${d} дней</span> заморозки`,'freeze.none':(m)=>`При сроке ${m} мес — заморозка не предусмотрена`,'freeze.grade':'Для данного класса заморозка не предусмотрена','transfer.title':'Перевод обучения','transfer.desc':'По письменному заявлению в офис. Перевод в другую группу или филиал.','refund.title':'Возврат средств','refund.desc':(rate)=>`За неиспользованные дни: Б − (О ÷ 30 × Ф). Удержание — <span class="reminder-freeze-days">${rate} ₸/мес</span>. Уведомление — письменно в офис.`,
     'custom.lbl':(m)=>`${m} мес`,'custom.lbl.pdf':(m)=>`${m} месяцев`,
     'p.ent1':'1 предмет · 9 мес','p.ent2':'2 предмета · 9 мес','p.ent4':'4 предмета · 9 мес',
     'ent.note':'Все пакеты рассчитаны на 9 месяцев обучения',
@@ -324,7 +324,7 @@ const TR={
     'wa.lbl':'Клиентке WhatsApp-та жіберу','wa.btn':'Прайс жіберу','wa.hint':'PDF автоматты жүктеледі · WhatsApp қысқа хабарламамен ашылады',
     'g.34':'4–5 сынып','g.5':'6 сынып','g.ent':'ҰБТ · 11 сынып',
     'p.3m':'3 ай','p.45m':'4,5 ай','p.5m':'5 ай','p.65m':'6,5 ай','p.6m':'6 ай','p.9m':'9 ай','p.12m':'12 ай',
-    'p.custom':'✏️ Өз мерзімім','custom.months':'оқу айы','custom.min':'минимум 3 ай','date.calc.title':'Күндер бойынша есептеу','reminder.title':'Абонемент артықшылықтары','freeze.title':'Оқуды тоқтата тұру','freeze.has':(m,d)=>`${m} ай мерзімінде — <span class="reminder-freeze-days">${d} күн</span> тоқтата тұру`,'freeze.none':(m)=>`${m} ай мерзімінде — тоқтата тұру қарастырылмаған`,'transfer.title':'Оқуды ауыстыру','transfer.desc':'Жазбаша өтініш бойынша. Басқа топқа немесе филиалға ауысу.','refund.title':'Қайтарым','refund.desc':'Пайдаланылмаған күндер: Б − (О ÷ 30 × Ф). Хабарлама — кеңсеге жазбаша.',
+    'p.custom':'✏️ Өз мерзімім','custom.months':'оқу айы','custom.min':'минимум 3 ай','date.calc.title':'Күндер бойынша есептеу','reminder.title':'Абонемент артықшылықтары','freeze.title':'Оқуды тоқтата тұру','freeze.has':(m,d)=>`${m} ай мерзімінде — <span class="reminder-freeze-days">${d} күн</span> тоқтата тұру`,'freeze.none':(m)=>`${m} ай мерзімінде — тоқтата тұру қарастырылмаған`,'freeze.grade':'Бұл сыныпта тоқтата тұру қарастырылмаған','transfer.title':'Оқуды ауыстыру','transfer.desc':'Жазбаша өтініш бойынша. Басқа топқа немесе филиалға ауысу.','refund.title':'Қайтарым','refund.desc':(rate)=>`Пайдаланылмаған күндер: Б − (О ÷ 30 × Ф). Ай ұстамасы — <span class="reminder-freeze-days">${rate} ₸/ай</span>. Хабарлама — кеңсеге жазбаша.`,
     'custom.lbl':(m)=>`${m} ай`,'custom.lbl.pdf':(m)=>`${m} ай`,
     'p.ent1':'1 пән · 9 ай','p.ent2':'2 пән · 9 ай','p.ent4':'4 пән · 9 ай',
     'ent.note':'Барлық пакеттер 9 ай оқуға есептелген',
@@ -382,7 +382,7 @@ function renderPeriods(){
   document.getElementById('period-hint').style.display='none';
 }
 function getPeriodData(){const g=GRADES[state.grade];if(state.period==='custom'){const m=state.customMonths;const tier=g.customTiers.find(ti=>m>=ti.min&&m<=ti.max);const infoEl=document.getElementById('custom-tier-info');if(infoEl&&tier)infoEl.textContent=fmt(tier.monthly)+' ₸ / '+t('monthly.sfx').split('/')[1].trim();return{p:{total:m*tier.monthly,monthly:tier.monthly},pLabel:t('custom.lbl',m)};}const p=g.periods[state.period];return{p,pLabel:t(p.labelKey)};}
-function render(){const isCustom=state.period==='custom';const show=state.grade!==null&&((isCustom&&state.customMonths!==null)||(!isCustom&&state.period!==null));document.getElementById('empty-state').style.display=show?'none':'';document.getElementById('result-content').style.display=show?'':'none';document.getElementById('details-card').style.display=show?'':'none';document.getElementById('kaspi-card').style.display=show?'':'none';if(!show){document.getElementById('wa-card').style.display='none';return;}
+function render(){const isCustom=state.period==='custom';const show=state.grade!==null&&((isCustom&&state.customMonths!==null)||(!isCustom&&state.period!==null));const refundEl=document.getElementById('refund-desc');if(refundEl&&state.grade){const is1011=['ent'].includes(state.grade);refundEl.innerHTML=t('refund.desc',fmt(is1011?125000:113000));}document.getElementById('empty-state').style.display=show?'none':'';document.getElementById('result-content').style.display=show?'':'none';document.getElementById('details-card').style.display=show?'':'none';document.getElementById('kaspi-card').style.display=show?'':'none';if(!show){document.getElementById('wa-card').style.display='none';return;}
   const g=GRADES[state.grade];const{p,pLabel}=getPeriodData();const gLabel=t(g.labelKey);
   let dr=0;state.discounts.forEach(id=>{dr+=DISCOUNTS[id].rate;});dr=Math.min(dr,0.40);
   const ft=Math.round(p.total*(1-dr));const fm=Math.round(p.monthly*(1-dr));const sv=p.total-ft;const hd=dr>0;
@@ -397,7 +397,7 @@ function render(){const isCustom=state.period==='custom';const show=state.grade!
   document.getElementById('d-total').textContent=fmt(ft)+' ₸';document.getElementById('d-monthly').textContent=fmt(fm)+' ₸';
   document.getElementById('kaspi-12').textContent=fmt(Math.round(ft/12));document.getElementById('kaspi-24').textContent=fmt(Math.round(ft/24));
   document.getElementById('wa-card').style.display='';
-  const selM=state.period==='custom'?state.customMonths:Math.round(p.total/p.monthly*10)/10;const fd=selM>=10?t('freeze.has',selM,60):selM>=6?t('freeze.has',selM,30):t('freeze.none',selM);const fe=document.getElementById('freeze-desc');if(fe)fe.innerHTML=fd;
+  const selM=state.period==='custom'?state.customMonths:Math.round(p.total/p.monthly*10)/10;const noFreezeGrade=['5','ent'].includes(state.grade);const fd=noFreezeGrade?t('freeze.grade'):selM>=10?t('freeze.has',selM,60):selM>=6?t('freeze.has',selM,30):t('freeze.none',selM);const fe=document.getElementById('freeze-desc');if(fe)fe.innerHTML=fd;
 }
 function generatePDF(){if(state.grade===null)return;const isCustom=state.period==='custom';if(!isCustom&&state.period===null)return;if(isCustom&&!state.customMonths)return;const rawPhone=document.getElementById('wa-phone').value.replace(/\D/g,'');if(rawPhone.length<10){alert(t('alert.phone'));return;}const phone=rawPhone.startsWith('8')?'7'+rawPhone.slice(1):rawPhone;
   const g=GRADES[state.grade];const{p,pLabel:_pl}=getPeriodData();const pLabel=isCustom?t('custom.lbl.pdf',state.customMonths):_pl;const gLabel=t(g.labelKey);
