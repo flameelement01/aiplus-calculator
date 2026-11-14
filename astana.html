@@ -202,7 +202,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <div class="hint-discounts" data-i18n="disc.hint">Скидки суммируются · применяются к итоговой сумме</div>
       </div>
       <div class="reminder-card" id="reminder-card" style="display:none">
-        <div class="reminder-title" data-i18n="reminder.title">📋 Напомните клиенту</div>
+        <div class="reminder-title" data-i18n="reminder.title">Плюсы абонемента</div>
         <div class="reminder-item"><div class="reminder-icon">❄️</div><div><div class="reminder-item-title" data-i18n="freeze.title">Заморозка</div><div class="reminder-item-desc" id="freeze-desc"></div></div></div>
         <div class="reminder-item"><div class="reminder-icon">🔄</div><div><div class="reminder-item-title" data-i18n="transfer.title">Перевод</div><div class="reminder-item-desc" data-i18n="transfer.desc"></div></div></div>
         <div class="reminder-item"><div class="reminder-icon">↩️</div><div><div class="reminder-item-title" data-i18n="refund.title">Возврат</div><div class="reminder-item-desc" data-i18n="refund.desc"></div></div></div>
@@ -285,7 +285,7 @@ const TR={
     'wa.lbl':'Отправить клиенту в WhatsApp','wa.btn':'Отправить прайс','wa.hint':'PDF скачается автоматически · откроется WhatsApp с кратким сообщением',
     'g.039':'0–3 / 7–9 кл','g.45':'4–5 кл','g.6':'6 кл','g.10':'10 кл','g.1112':'11–12 кл',
     'p.3m':'3 месяца','p.45m':'4,5 месяца','p.5m':'5 месяцев','p.65m':'6,5 месяцев','p.6m':'6 месяцев','p.75m':'7,5 месяца','p.8m':'8 месяцев','p.55m':'5,5 месяца','p.9m':'9 месяцев','p.85m':'8,5 месяца','p.12m':'12 месяцев',
-    'p.custom':'✏️ Свой срок','custom.months':'месяцев обучения','custom.min':'минимум 3 месяца','date.calc.title':'По датам обучения','reminder.title':'📋 Напомните клиенту','freeze.title':'Заморозка обучения','freeze.has':(m,d)=>`При сроке ${m} мес — <span class="reminder-freeze-days">${d} дней</span> заморозки`,'freeze.none':(m)=>`При сроке ${m} мес — заморозка не предусмотрена`,'transfer.title':'Перевод обучения','transfer.desc':'По письменному заявлению в офис. Перевод в другую группу или филиал.','refund.title':'Возврат средств','refund.desc':'За неиспользованные дни: Б − (О ÷ 30 × Ф). Уведомление — письменно в офис.',
+    'p.custom':'✏️ Свой срок','custom.months':'месяцев обучения','custom.min':'минимум 3 месяца','date.calc.title':'По датам обучения','reminder.title':'Плюсы абонемента','freeze.title':'Заморозка обучения','freeze.has':(m,d)=>`При сроке ${m} мес — <span class="reminder-freeze-days">${d} дней</span> заморозки`,'freeze.none':(m)=>`При сроке ${m} мес — заморозка не предусмотрена`,'transfer.title':'Перевод обучения','transfer.desc':'По письменному заявлению в офис. Перевод в другую группу или филиал.','refund.title':'Возврат средств','refund.desc':'За неиспользованные дни: Б − (О ÷ 30 × Ф). Уведомление — письменно в офис.',
     'custom.lbl':(m)=>`${m} мес`,'custom.lbl.pdf':(m)=>`${m} месяцев`,
     'monthly.sfx':'₸ / месяц','savings':(s,r)=>`★ Экономия ${s} ₸ (−${r}%)`,
     'disc.stream.lbl':'Действующий поток −20%','disc.benefit.lbl':'Льгота −10%','disc.result.lbl':'2 или более детей из семьи −10%',
@@ -307,7 +307,7 @@ const TR={
     'wa.lbl':'Клиентке WhatsApp-та жіберу','wa.btn':'Прайс жіберу','wa.hint':'PDF автоматты жүктеледі · WhatsApp қысқа хабарламамен ашылады',
     'g.039':'0–3 / 7–9 сынып','g.45':'4–5 сынып','g.6':'6 сынып','g.10':'10 сынып','g.1112':'11–12 сынып',
     'p.3m':'3 ай','p.45m':'4,5 ай','p.5m':'5 ай','p.65m':'6,5 ай','p.6m':'6 ай','p.75m':'7,5 ай','p.8m':'8 ай','p.55m':'5,5 ай','p.9m':'9 ай','p.85m':'8,5 ай','p.12m':'12 ай',
-    'p.custom':'✏️ Өз мерзімім','custom.months':'оқу айы','custom.min':'минимум 3 ай','date.calc.title':'Күндер бойынша есептеу','reminder.title':'📋 Клиентке еске салыңыз','freeze.title':'Оқуды тоқтата тұру','freeze.has':(m,d)=>`${m} ай мерзімінде — <span class="reminder-freeze-days">${d} күн</span> тоқтата тұру`,'freeze.none':(m)=>`${m} ай мерзімінде — тоқтата тұру қарастырылмаған`,'transfer.title':'Оқуды ауыстыру','transfer.desc':'Жазбаша өтініш бойынша. Басқа топқа немесе филиалға ауысу.','refund.title':'Қайтарым','refund.desc':'Пайдаланылмаған күндер: Б − (О ÷ 30 × Ф). Хабарлама — кеңсеге жазбаша.',
+    'p.custom':'✏️ Өз мерзімім','custom.months':'оқу айы','custom.min':'минимум 3 ай','date.calc.title':'Күндер бойынша есептеу','reminder.title':'Абонемент артықшылықтары','freeze.title':'Оқуды тоқтата тұру','freeze.has':(m,d)=>`${m} ай мерзімінде — <span class="reminder-freeze-days">${d} күн</span> тоқтата тұру`,'freeze.none':(m)=>`${m} ай мерзімінде — тоқтата тұру қарастырылмаған`,'transfer.title':'Оқуды ауыстыру','transfer.desc':'Жазбаша өтініш бойынша. Басқа топқа немесе филиалға ауысу.','refund.title':'Қайтарым','refund.desc':'Пайдаланылмаған күндер: Б − (О ÷ 30 × Ф). Хабарлама — кеңсеге жазбаша.',
     'custom.lbl':(m)=>`${m} ай`,'custom.lbl.pdf':(m)=>`${m} ай`,
     'monthly.sfx':'₸ / ай','savings':(s,r)=>`★ Үнем ${s} ₸ (−${r}%)`,
     'disc.stream.lbl':'Ағымдағы топ −20%','disc.benefit.lbl':'Жеңілдік −10%','disc.result.lbl':'Бір отбасынан 2+ бала −10%',

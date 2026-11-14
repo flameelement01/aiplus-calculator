@@ -238,7 +238,7 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
         <div class="hint-discounts" data-i18n="disc.hint">Скидки суммируются · применяются к итоговой сумме</div>
       </div>
       <div class="reminder-card" id="reminder-card" style="display:none">
-        <div class="reminder-title" data-i18n="reminder.title">📋 Напомните клиенту</div>
+        <div class="reminder-title" data-i18n="reminder.title">Плюсы абонемента</div>
         <div class="reminder-item"><div class="reminder-icon">❄️</div><div><div class="reminder-item-title" data-i18n="freeze.title">Заморозка обучения</div><div class="reminder-item-desc" id="freeze-desc"></div></div></div>
         <div class="reminder-item"><div class="reminder-icon">🔄</div><div><div class="reminder-item-title" data-i18n="transfer.title">Перевод обучения</div><div class="reminder-item-desc" data-i18n="transfer.desc"></div></div></div>
         <div class="reminder-item"><div class="reminder-icon">↩️</div><div><div class="reminder-item-title" data-i18n="refund.title">Возврат средств</div><div class="reminder-item-desc" data-i18n="refund.desc"></div></div></div>
@@ -348,7 +348,7 @@ const TR = {
     'p.45m':'4,5 месяца', 'p.5m':'5 месяцев', 'p.65m':'6,5 месяцев', 'p.75m':'7,5 месяца', 'p.8m':'8 месяцев',
     'p.6nis':'5,5 мес · НИШ', 'p.75f':'7 мес · Полный курс', 'p.85f':'8,5 мес · Полный курс',
     'p.custom':'✏️ Свой срок', 'custom.months':'месяцев обучения', 'custom.min':'минимум 3 месяца', 'date.calc.title':'По датам обучения',
-    'reminder.title':'📋 Напомните клиенту','freeze.title':'Заморозка обучения',
+    'reminder.title':'Плюсы абонемента','freeze.title':'Заморозка обучения',
     'freeze.has':(m,d)=>`При сроке ${m} мес — <span class="reminder-freeze-days">${d} дней</span> заморозки`,
     'freeze.none':(m)=>`При сроке ${m} мес — заморозка не предусмотрена`,
     'transfer.title':'Перевод обучения','transfer.desc':'По письменному заявлению в офис. Перевод в другую группу или филиал.',
@@ -388,7 +388,7 @@ const TR = {
     'p.45m':'4,5 ай', 'p.5m':'5 ай', 'p.65m':'6,5 ай', 'p.75m':'7,5 ай', 'p.8m':'8 ай',
     'p.6nis':'5,5 ай · НИШ', 'p.75f':'7 ай · Толық курс', 'p.85f':'8,5 ай · Толық курс',
     'p.custom':'✏️ Өз мерзімім', 'custom.months':'оқу айы', 'custom.min':'минимум 3 ай', 'date.calc.title':'Күндер бойынша есептеу',
-    'reminder.title':'📋 Клиентке еске салыңыз','freeze.title':'Оқуды тоқтата тұру',
+    'reminder.title':'Абонемент артықшылықтары','freeze.title':'Оқуды тоқтата тұру',
     'freeze.has':(m,d)=>`${m} ай мерзімінде — <span class="reminder-freeze-days">${d} күн</span> тоқтата тұру`,
     'freeze.none':(m)=>`${m} ай мерзімінде — тоқтата тұру қарастырылмаған`,
     'transfer.title':'Оқуды ауыстыру','transfer.desc':'Жазбаша өтініш бойынша. Басқа топқа немесе филиалға ауысу.',
