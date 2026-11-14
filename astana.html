@@ -33,6 +33,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .lang-btn{height:26px;padding:0 10px;border-radius:6px;border:none;background:none;color:rgba(255,255,255,0.5);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;}
 .lang-btn.active{background:var(--city-color);color:#fff;}
 .lang-btn:hover:not(.active){color:rgba(255,255,255,0.85);}
+html.dark{--bg:#12111e;--surface:#1c1b2e;--border:#2a2940;--text:#f0ede8;--text2:#8d8a85;--muted:#6a6760;--orange-light:#271d08;--orange-border:#3d2a05;--kaspi-bg:#1f0808;--kaspi-border:#3a0f0f;--green-light:#081a0e;--dark:#0a0918;}
+html.dark .custom-months-input{background:var(--surface);}
+html.dark .date-input,html.dark .date-input:focus{background:var(--surface);color-scheme:dark;}
+html.dark .kaspi-cell{background:var(--surface);}
+.theme-btn{width:34px;height:34px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s;}
+.theme-btn:hover{background:rgba(255,255,255,0.15);}
 .page{max-width:1080px;margin:0 auto;padding:28px 20px 56px;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
 @media(max-width:720px){.page{grid-template-columns:1fr;}.col-right{order:-1;}}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;}
@@ -121,6 +127,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 </style>
 </head>
 <body>
+<script>if(localStorage.getItem('aiplus_theme')==='dark')document.documentElement.classList.add('dark');</script>
 
 <!-- ── Auth Overlay ── -->
 <div id="auth-overlay" style="position:fixed;inset:0;background:#1e1d2e;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;">
@@ -170,6 +177,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <button class="lang-btn active" data-lang="ru" onclick="applyLang('ru')">RU</button>
       <button class="lang-btn" data-lang="kz" onclick="applyLang('kz')">ҚАЗ</button>
     </div>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
   </div>
 </header>
 
@@ -410,6 +420,9 @@ function applyLang(newLang){lang=newLang;document.querySelectorAll('.lang-btn').
   render();}
 render();
 
+function toggleTheme(){const dark=document.documentElement.classList.toggle('dark');localStorage.setItem('aiplus_theme',dark?'dark':'light');updateThemeIcon();}
+function updateThemeIcon(){const btn=document.getElementById('theme-btn');if(!btn)return;const dark=document.documentElement.classList.contains('dark');const moon='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';const sun='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';btn.innerHTML=dark?sun:moon;}
+document.addEventListener('DOMContentLoaded',updateThemeIcon);
 const AUTH={login:'astanaalmaty',pass:'Aiplus-AstAlm26'};
 const ADMIN={login:'admin',pass:'Aiplus-Admin26'};
 function doLogin(){const l=document.getElementById('inp-login').value.trim().toLowerCase();const p=document.getElementById('inp-pass').value;const err=document.getElementById('auth-error');if(l===ADMIN.login&&p===ADMIN.pass){localStorage.setItem('aiplus_admin','1');document.getElementById('auth-overlay').style.display='none';document.getElementById('admin-nav').style.display='flex';}else if(l===AUTH.login&&p===AUTH.pass){localStorage.setItem('aiplus_auth_astana','1');document.getElementById('auth-overlay').style.display='none';document.getElementById('city-modal').style.display='flex';}else{err.textContent='Неверный логин или пароль';document.getElementById('inp-pass').value='';}}
